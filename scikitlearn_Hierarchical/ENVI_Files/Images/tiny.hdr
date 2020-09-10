@@ -1,0 +1,13 @@
+ENVI
+description = Imported from image file ENVI_Files\Images\tiny.png
+samples = 10
+lines = 10
+bands = 3
+header offset = 0
+file type = Spero Chemvision
+data type = 4
+interleave = None
+sensor type = None
+byte order = 0
+wavelength units = Unknown
+wavelength = {  0.0, 1.0, 2.0}

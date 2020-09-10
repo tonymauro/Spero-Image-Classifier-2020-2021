@@ -1,0 +1,49 @@
+These routines should allow you to import ENVI data into python.  I use Anaconda to provide the libraries I use (numpy, scipy, imageio, matplotlib, etc), but there's nothing special about any of them (so you probably already have them all installed).  This is only an issue if the imports fail.
+
+Warning! These routines have been my sandbox for playing with ENVI images, so these files include methods for doing a variety of odd things whose utility might not be immediately apparent.  So no, this in not an example of a commercial quality python library.  If you keep to the recipe outlines below you should be OK.  Let me know if you have questions.
+
+The Envi class (in Envi.py) is a container designed to carry along the fields we use from the ENVI format.  We use only a subset of the full set of values described in https://www.harrisgeospatial.com/docs/enviheaderfiles.html .  From your point of view you probably only care about the Pixels and wavelength fields, containing (you guessed it) the image voxels in a 3D numerical python array (voxels are always 32-bit floating point for us; we don't handle the general case) and the 'wavelength' in the given units.  The "wavelength units" field describes the meaning of the numbers in wavelength.  For actual Spero data this will be wavenumber in inverse centimeters ("cm-1").  For cases without obvious physical meaning (RGB, various MRI pulse sequences, &c) this is set to "Unknown" and the wavelength set to sequential integers that identify the bands but are without physical meaning.
+
+To help connect the previous work you've done on images with the hyperspectral image cubes of interest I've add a method to Envi to read an image into an Envi object, resulting in a hypercube of depth three for R, G and B.  You can run your clustering algorithms using the data with this organization to check that things come out the same.
+
+A typical use session looks like this ...
+
+cd <Directory with files>
+import Envi
+import numpy as np
+import matplotlib.pyplot as plt
+# Need to create the object before we can do anything with it
+ei = Envi.EnviImage()
+# ReadImage returns the values originally read (8 bit integers)
+# Assign to a variable to keep it from printing
+im = ei.ReadImage('c:/Users/dnichols/Pictures/TropicalBeach.jpg')
+# Display one of the planes of the image
+plt.imshow(ei.Pixels[:,:,0])
+# Save this in ENVI format (note no extension)
+ei.Write('c:/Users/dnichols/Pictures/TropicalBeachTest')
+# Now, re-read it to verify we got it right
+# First create another object
+ei2 = Envi.En
+....
+
+
+
+viImage()
+# Read the saved date.  It is important that the arguments beyond the file
+# name appear as they do, lest the absorbtion transformation be mis-applied
+ei2.Read('c:/Users/dnichols/Pictures/TropicalBeachTest', True, False, False)
+# Check that we completed the round-trip correctly
+plt.imshow(ei2.Pixels[:,:,0])
+
+# To read the data Spero produces (Held in TestFile)
+ei3 = Envi.EnviImage()
+# Defaults are reasonable for images Spero produces
+ei3.Read(TestFile)
+# Check out the size of the image hypercube
+ei3.Pixels.shape
+Out[20]: (480, 480, 1081)
+# Look at one of the images
+plt.imshow(ei3.Pixels[:,:,500])
+# Look at the spectrum at a single pixel
+plt.plot(ei3.wavelength, ei3.Pixels[200,200,:])
+

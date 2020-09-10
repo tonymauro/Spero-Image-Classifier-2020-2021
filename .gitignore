@@ -1,0 +1,10 @@
+venv
+.idea
+scikit-learn_Hierarchical/.idea
+scikit-learn_KMeans/KMeans/venv
+scikit-learn_KMeans/.idea
+custom_KMeans/KMeans/venv
+custom_KMeans/.idea
+GUI/.idea
+__pycache__/
+.DS_Store
