@@ -8,3 +8,4 @@ custom_KMeans/.idea
 GUI/.idea
 __pycache__/
 .DS_Store
+.vscode
