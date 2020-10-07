@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         self.DropDownList = QComboBox()
         self.DropDownList.addItem("Choose Clustering Algorithm")
         self.DropDownList.addItem("K-Means Clustering: Scikit-Learn")
+        self.DropDownList.addItem("Gaussian Mixture Model: Scikit-Learn")
         self.DropDownList.addItem("Custom K-Means Clustering Algorithm")
         self.DropDownList.addItem("Hierarchical Clustering Algorithm: Scikit-Learn")
         self.DropDownList.currentIndexChanged.connect(self.checkDropDown)
@@ -319,6 +320,9 @@ class MainWindow(QMainWindow):
                                                         decimate_factor=decimateOverride)
             elif self.DropDownList.currentText() == "K-Means Clustering: Scikit-Learn":
                 runner.run_kMeansAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
+                                           decimate_factor=decimateOverride)
+            elif self.DropDownList.currentText() == "Gaussian Mixture Model: Scikit-Learn":
+                runner.run_GMMAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
                                            decimate_factor=decimateOverride)
             self.newWindow.close()
             self.show()
