@@ -6,6 +6,8 @@ from CompiledAlgorithms.elbowMethod import Elbow
 import numpy as np
 
 from CompiledAlgorithms.ENVI_Files import Envi
+from sklearn.decomposition import PCA
+import datetime
 
 
 class DominantColors:
@@ -14,8 +16,11 @@ class DominantColors:
     CENTROIDS = None
     LABELS = None
     WAVELENGTHS = None
+    PCAON = True
+    PCADIMENSIONS = 0
 
     def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor):
+        print(datetime.datetime.now())
         # PATH is the path of the ENVI File, RESULT_PATH is where the results will be saved
         # Cluster overrides and decimation factor are optional override options for user
         # Default resultFolderDir = ...CompiledAlgorithms/Result/imageName+timestamp
@@ -45,10 +50,29 @@ class DominantColors:
         # Kmeans only takes in 2D arrays
         img = np.array(ei.Pixels)
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
-        self.IMAGE = img
 
         # Kmeans clustering
         # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
+
+        if self.PCAON:
+            pca = PCA()
+            pca.fit(img)
+            # print(pca.explained_variance_ratio_)
+            sum = 0
+            for x in range(len(pca.explained_variance_ratio_)):
+                if pca.explained_variance_ratio_[x] > 0.001:
+                    sum += pca.explained_variance_ratio_[x]
+                    self.PCADIMENSIONS += 1
+                else:
+                    break
+            print(sum)
+            print(self.PCADIMENSIONS)
+            pca = PCA(n_components=self.PCADIMENSIONS)
+            pca.fit(img)
+            print(pca.explained_variance_ratio_)
+            img = pca.fit_transform(img)
+
+        self.IMAGE = img
         if self.cluster_override == 0:
             self.CLUSTERS = Elbow.elbowMethod(self, self.IMAGE)
         else:
@@ -93,7 +117,6 @@ class DominantColors:
             for y in range(newImg.shape[1]):
                 newImg[x, y] = colorKey[labels[c]]
                 c += 1
-
         # Plots the 3D graph using R G B list collected from above and use colors from the clusters list
         # Saves the image as a png file in the result folder given from user input(If no user input, the
         # files would be saved at default "RESULT/*FILENAME*"
@@ -110,12 +133,16 @@ class DominantColors:
         plt.ylabel('Absorption')
         plt.xlabel('Wave Number')
         plt.title("Wave Number vs Absorption For Each Center(KMeans)")
+        if self.PCAON:
+            # Note: these wavenumbers are not right when PCA is on
+            self.WAVELENGTHS = self.WAVELENGTHS[0:self.PCADIMENSIONS]
         for x in range(k):
             plt.plot(self.WAVELENGTHS, self.CENTROIDS[x], color=colorChoices[x], marker="o",
                      label="Center " + str(x + 1))
         plt.legend()
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
         self.makeCSV()
+        print(datetime.datetime.now())
 
     def makeCSV(self):
         # makes CSV file of the clustered data in the given directory in case

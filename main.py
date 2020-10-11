@@ -1,4 +1,4 @@
-from CompiledAlgorithms import GUI
+import GUI
 from PyQt5.QtWidgets import QApplication
 import sys
 

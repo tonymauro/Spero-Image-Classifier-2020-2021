@@ -365,7 +365,7 @@ class Result(QMainWindow):
         # Access ENVI file to give specific spectrum at each pixel
         QMainWindow.__init__(self)
         self.setWindowTitle("Results")
-        self.setWindowIcon(QIcon('DRS_Logo.jfif'))
+        self.setWindowIcon(QIcon('CompiledAlgorithms/DRS_Logo.jfif'))
         self.setFixedSize(1400, 700)
         self.folderPath = folderPath
         self.ENVIFilePath = ENVIFilePath
