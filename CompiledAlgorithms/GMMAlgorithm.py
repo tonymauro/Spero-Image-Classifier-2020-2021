@@ -32,6 +32,18 @@ class DominantColors1:
         self.cluster_override = cluster_override
         self.decimate_factor = decimate_factor
 
+    def find_centers_and_labels(self):
+        """
+        Finds the centers of the clusters using the KMeans algorithm
+        
+        Returns
+        A tuple containing the centers and the corresponding cluster labels
+        """
+        kmeans = KMeans(n_clusters=self.CLUSTERS)
+        kmeans.fit(self.IMAGE)
+        return (kmeans.cluster_centers_, kmeans.labels_)
+        
+        
     def findDominant(self):
         '''
         Uses elbow method to find number of clusters and then applys GMM
@@ -82,6 +94,10 @@ class DominantColors1:
         # Runs the Scikitlearn algorithm with the determined number of clusters
         gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=20)
         self.LABELS = gmm.fit_predict(img)
+
+        centroids, labels = self.find_centers_and_labels()
+
+        print(labels, self.LABELS)
 
         # Centroids are the "average clusters" of each cluster
         # Labels are numbers denoting which cluster each pixel belongs to (Pixel location corresponds with the label's
