@@ -5,9 +5,9 @@ from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from CompiledAlgorithms.elbowMethod import Elbow
 import numpy as np
-
+from sklearn.decomposition import PCA
 from CompiledAlgorithms.ENVI_Files import Envi
-
+import datetime
 
 class DominantColors1:
     CLUSTERS = None
@@ -15,7 +15,10 @@ class DominantColors1:
     CENTROIDS = None
     LABELS = None
     WAVELENGTHS = None
+    PCAON = True
+    PCADIMENSIONS = 0
     def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor):
+        print(datetime.datetime.now())
         # PATH is the path of the ENVI File, RESULT_PATH is where the results will be saved
         # Cluster overrides and decimation factor are optional override options for user
         # Default resultFolderDir = ...CompiledAlgorithms/Result/imageName+timestamp
@@ -28,6 +31,23 @@ class DominantColors1:
 
         self.cluster_override = cluster_override
         self.decimate_factor = decimate_factor
+
+    def find_centers(self):
+        points = self.origImage
+        c = 0
+        centers = np.zeros((self.CLUSTERS, points.shape[2]))
+        counts = np.zeros(self.CLUSTERS)
+        # Remakes the image based on the labels at each pixel
+        # The label's color is determined by the index of list colorChoices
+        for x in range(points.shape[0]):
+            for y in range(points.shape[1]):
+                centers[self.LABELS[c]] += points[x,y]
+                counts[self.LABELS[c]] += 1
+                c += 1
+        for i in range(self.CLUSTERS):
+            centers[i] /= counts[i]
+        print(centers)
+        return centers
 
     def findDominant(self):
         '''
@@ -48,6 +68,24 @@ class DominantColors1:
         # Kmeans only takes in 2D arrays
         img = np.array(ei.Pixels)
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
+        origimage = img
+        if self.PCAON:
+            pca = PCA()
+            pca.fit(img)
+            # print(pca.explained_variance_ratio_)
+            sum = 0
+            for x in range(len(pca.explained_variance_ratio_)):
+                if pca.explained_variance_ratio_[x] > 0.001:
+                    sum += pca.explained_variance_ratio_[x]
+                    self.PCADIMENSIONS += 1
+                else:
+                    break
+            print(sum)
+            print(self.PCADIMENSIONS)
+            pca = PCA(n_components=self.PCADIMENSIONS)
+            pca.fit(img)
+            print(pca.explained_variance_ratio_)
+            img = pca.fit_transform(img)
         self.IMAGE = img
 
         # Kmeans clustering
@@ -58,15 +96,18 @@ class DominantColors1:
             self.CLUSTERS = self.cluster_override
 
         # Runs the Scikitlearn algorithm with the determined number of clusters
-        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=20)
-        self.LABELS = gmm.fit_predict(img)
+        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='diag')
+        gmm.fit(img)
+
+
 
         # Centroids are the "average clusters" of each cluster
         # Labels are numbers denoting which cluster each pixel belongs to (Pixel location corresponds with the label's
         # index.
         # Ex. Label = [0, 4, 1, 2, 3, 1, 4, 0, 0..... 1, 2], where 0 would be cluster 0, 1 would be cluster 1, etc...
         # and pixel at (0, 0) would belong to cluster 0.
-        self.CENTROIDS = gmm.means_
+        self.LABELS = gmm.predict(img)
+        self.CENTROIDS = self.find_centers()
         # Creates color coded image based on the clusters and a
         # centroid graph plotting each cluster's average spectrum
         self.plot()
@@ -112,12 +153,14 @@ class DominantColors1:
         plt.ylabel('Absorption')
         plt.xlabel('Wave Number')
         plt.title("Wave Number vs Absorption For Each Center(GMM)")
+
         for x in range(k):
             plt.plot(self.WAVELENGTHS, self.CENTROIDS[x], color=colorChoices[x], marker="o",
                      label="Center " + str(x + 1))
         plt.legend()
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
         self.makeCSV()
+        print(datetime.datetime.now())
 
     # no change for GMM but we will change later
     def makeCSV(self):
