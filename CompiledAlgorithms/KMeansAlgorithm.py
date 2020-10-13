@@ -34,6 +34,23 @@ class DominantColors:
         self.cluster_override = cluster_override
         self.decimate_factor = decimate_factor
 
+    def find_centers(self):
+        points = self.origImage
+        c = 0
+        centers = np.zeros((self.CLUSTERS, points.shape[2]))
+        counts = np.zeros(self.CLUSTERS)
+        # Remakes the image based on the labels at each pixel
+        # The label's color is determined by the index of list colorChoices
+        for x in range(points.shape[0]):
+            for y in range(points.shape[1]):
+                centers[self.LABELS[c]] += points[x,y]
+                counts[self.LABELS[c]] += 1
+                c += 1
+        for i in range(self.CLUSTERS):
+            centers[i] /= counts[i]
+        print(centers)
+        return centers
+
     def findDominant(self):
         # Creates ENVI Object and reads the image at the given path
         ei = Envi.EnviImage()
@@ -87,8 +104,8 @@ class DominantColors:
         # index.
         # Ex. Label = [0, 4, 1, 2, 3, 1, 4, 0, 0..... 1, 2], where 0 would be cluster 0, 1 would be cluster 1, etc...
         # and pixel at (0, 0) would belong to cluster 0.
-        self.CENTROIDS = kmeans.cluster_centers_
         self.LABELS = kmeans.labels_
+        self.CENTROIDS = self.find_centers()
         # Creates color coded image based on the clusters and a
         # centroid graph plotting each cluster's average spectrum
         self.plot()
@@ -103,19 +120,26 @@ class DominantColors:
         # Temporary solution for color key. Require better method of creating differentiable colors
         # (Currently only selects colors from the colorChoices array)
         # If number of clusters > len(colorChoices) algorithm output would be wrong.
-        colorKey = []
         colorChoices = [[0, 1, 0], [1, 0, 0], [0, 1, 1], [0.5, 0.5, 0], [1, 0, 1], [1, .5, 1], [1, 0, 1], [0, 0, 1],
                         [.5, .5, .5], [.5, .5, 1]]
+        # Plots the wavenumber vs absorption graph for each centroid color coded
+        plt.figure()
+        plt.ylabel('Absorption')
+        plt.xlabel('Wave Number')
+        plt.title("Wave Number vs Absorption For Each Center(KMeans)")
+
         for center in range(k):
-            color = colorChoices[center]
-            colorKey.append(color)
+            plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",
+                     label="Center " + str(center + 1))
+        plt.legend()
+        plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
         c = 0
         newImg = np.zeros((points.shape[0], points.shape[1], 3))
         # Remakes the image based on the labels at each pixel
         # The label's color is determined by the index of list colorChoices
         for x in range(newImg.shape[0]):
             for y in range(newImg.shape[1]):
-                newImg[x, y] = colorKey[labels[c]]
+                newImg[x, y] = colorChoices[labels[c]]
                 c += 1
         # Plots the 3D graph using R G B list collected from above and use colors from the clusters list
         # Saves the image as a png file in the result folder given from user input(If no user input, the
@@ -128,19 +152,7 @@ class DominantColors:
         plt.imshow(newImg)
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredImage.png", bbox_inches="tight", pad_inches=0)
 
-        # Plots the wavenumber vs absorption graph for each centroid color coded
-        plt.figure()
-        plt.ylabel('Absorption')
-        plt.xlabel('Wave Number')
-        plt.title("Wave Number vs Absorption For Each Center(KMeans)")
-        if self.PCAON:
-            # Note: these wavenumbers are not right when PCA is on
-            self.WAVELENGTHS = self.WAVELENGTHS[0:self.PCADIMENSIONS]
-        for x in range(k):
-            plt.plot(self.WAVELENGTHS, self.CENTROIDS[x], color=colorChoices[x], marker="o",
-                     label="Center " + str(x + 1))
-        plt.legend()
-        plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
+
         self.makeCSV()
         print(datetime.datetime.now())
 
