@@ -96,7 +96,7 @@ class DominantColors1:
             self.CLUSTERS = self.cluster_override
 
         # Runs the Scikitlearn algorithm with the determined number of clusters
-        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='diag')
+        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='full')
         gmm.fit(img)
 
 
