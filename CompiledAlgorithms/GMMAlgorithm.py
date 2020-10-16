@@ -37,8 +37,6 @@ class DominantColors1:
         c = 0
         centers = np.zeros((self.CLUSTERS, points.shape[2]))
         counts = np.zeros(self.CLUSTERS)
-        # Remakes the image based on the labels at each pixel
-        # The label's color is determined by the index of list colorChoices
         for x in range(points.shape[0]):
             for y in range(points.shape[1]):
                 centers[self.LABELS[c]] += points[x,y]
@@ -122,21 +120,27 @@ class DominantColors1:
         # Temporary solution for color key. Require better method of creating differentiable colors
         # (Currently only selects colors from the colorChoices array)
         # If number of clusters > len(colorChoices) algorithm output would be wrong.
-        colorKey = []
         colorChoices = [[0, 1, 0], [1, 0, 0], [0, 1, 1], [0.5, 0.5, 0], [1, 0, 1], [1, .5, 1], [1, 0, 1], [0, 0, 1],
                         [.5, .5, .5], [.5, .5, 1]]
+        # Plots the wavenumber vs absorption graph for each centroid color coded
+        plt.figure()
+        plt.ylabel('Absorption')
+        plt.xlabel('Wave Number')
+        plt.title("Wave Number vs Absorption For Each Center(KMeans)")
         for center in range(k):
-            color = colorChoices[center]
-            colorKey.append(color)
-        c = 0
+            plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",
+                     label="Center " + str(center + 1))
+        plt.legend()
+        plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
+
         newImg = np.zeros((points.shape[0], points.shape[1], 3))
         # Remakes the image based on the labels at each pixel
         # The label's color is determined by the index of list colorChoices
+        c = 0
         for x in range(newImg.shape[0]):
             for y in range(newImg.shape[1]):
-                newImg[x, y] = colorKey[labels[c]]
+                newImg[x, y] = colorChoices[labels[c]]
                 c += 1
-
         # Plots the 3D graph using R G B list collected from above and use colors from the clusters list
         # Saves the image as a png file in the result folder given from user input(If no user input, the
         # files would be saved at default "RESULT/*FILENAME*"
@@ -148,17 +152,6 @@ class DominantColors1:
         plt.imshow(newImg)
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredImage.png", bbox_inches="tight", pad_inches=0)
 
-        # Plots the wavenumber vs absorption graph for each centroid color coded
-        plt.figure()
-        plt.ylabel('Absorption')
-        plt.xlabel('Wave Number')
-        plt.title("Wave Number vs Absorption For Each Center(GMM)")
-
-        for x in range(k):
-            plt.plot(self.WAVELENGTHS, self.CENTROIDS[x], color=colorChoices[x], marker="o",
-                     label="Center " + str(x + 1))
-        plt.legend()
-        plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
         self.makeCSV()
         print(datetime.datetime.now())
 

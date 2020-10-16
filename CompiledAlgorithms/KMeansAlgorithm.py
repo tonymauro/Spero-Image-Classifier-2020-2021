@@ -39,16 +39,15 @@ class DominantColors:
         c = 0
         centers = np.zeros((self.CLUSTERS, points.shape[2]))
         counts = np.zeros(self.CLUSTERS)
-        # Remakes the image based on the labels at each pixel
-        # The label's color is determined by the index of list colorChoices
+        labels = self.LABELS
         for x in range(points.shape[0]):
             for y in range(points.shape[1]):
-                centers[self.LABELS[c]] += points[x,y]
-                counts[self.LABELS[c]] += 1
+                centers[labels[c]] += points[x,y]
+                counts[labels[c]] += 1
                 c += 1
         for i in range(self.CLUSTERS):
             centers[i] /= counts[i]
-        print(centers)
+            print(i, centers[i])
         return centers
 
     def findDominant(self):
@@ -127,16 +126,16 @@ class DominantColors:
         plt.ylabel('Absorption')
         plt.xlabel('Wave Number')
         plt.title("Wave Number vs Absorption For Each Center(KMeans)")
-
         for center in range(k):
             plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",
                      label="Center " + str(center + 1))
         plt.legend()
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
-        c = 0
+
         newImg = np.zeros((points.shape[0], points.shape[1], 3))
         # Remakes the image based on the labels at each pixel
         # The label's color is determined by the index of list colorChoices
+        c = 0
         for x in range(newImg.shape[0]):
             for y in range(newImg.shape[1]):
                 newImg[x, y] = colorChoices[labels[c]]

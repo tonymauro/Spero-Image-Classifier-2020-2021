@@ -466,7 +466,7 @@ class Result(QMainWindow):
         x = int(xOrig * scalex)
         y = int(yOrig * scaley)
         self.selectGraph.clear()
-        self.selectGraph.plot(self.ei.wavelength, self.img[x][y], pen=pg.mkPen(QColor(self.clustered_picture.pixel(xOrig, yOrig)), width=3))
+        self.selectGraph.plot(self.ei.wavelength, self.img[y][x], pen=pg.mkPen(QColor(self.clustered_picture.pixel(xOrig, yOrig)), width=3))
         self.currPixel.setText("Currently selected pixel: ({}, {})".format(str(x), str(y)))
 
 if __name__ == "__main__":
