@@ -459,8 +459,8 @@ class Result(QMainWindow):
         # ENVI image's shape
         # Color of the line corresponds to the pixel's cluster
         # Updates scatter plot and graph the spectrum of the selected pixel based on the ENVI file
-        scalex = self.img.shape[0]/self.pixmap.size().width()
-        scaley = self.img.shape[1]/self.pixmap.size().height()
+        scalex = self.img.shape[1]/self.pixmap.size().width()
+        scaley = self.img.shape[0]/self.pixmap.size().height()
         xOrig = event.pos().x()
         yOrig = event.pos().y()
         x = int(xOrig * scalex)
