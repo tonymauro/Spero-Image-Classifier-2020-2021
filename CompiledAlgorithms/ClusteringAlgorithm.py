@@ -64,6 +64,15 @@ class ClusteringAlgorithm:
         print(centers)
         return centers
 
+    def normalize(self):
+        img = np.array(self.origImage)
+        if self.NORMALIZE:
+            scaler = StandardScaler()
+            for i in range(img.shape[0]):
+                for j in range(img.shape[1]):
+                    img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
+        self.normalizedImage=img
+
     def findDominant(self):
         # Creates ENVI Object and reads the image at the given path
         ei = Envi.EnviImage()
@@ -78,13 +87,8 @@ class ClusteringAlgorithm:
         self.WAVELENGTHS = ei.wavelength
         # reshapes image into 2D array shape (x*y, z)
         # Kmeans only takes in 2D arrays
-        img = np.array(ei.Pixels)
-        if self.NORMALIZE:
-            scaler = StandardScaler()
-            for i in range(img.shape[0]):
-                for j in range(img.shape[1]):
-                    img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
-        self.normalizedImage=img
+        self.normalize()
+        img = self.normalizedImage
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
 
         # Kmeans clustering
