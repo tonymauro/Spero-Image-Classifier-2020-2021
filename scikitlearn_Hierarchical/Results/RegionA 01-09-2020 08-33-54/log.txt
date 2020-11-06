@@ -1,7 +1,0 @@
-08-33-54: Starting at: 01-09-2020 08-33-54
-Logging is Hr/Min/Sec (24hrs)
-
-08-33-54: Directory created for files: Results\RegionA 01-09-2020 08-33-54
-08-33-55: Starting Elbow Method...
-08-33-55: Testing optimal K-clusters...08-33-56: A fatal exception occurred, Error:
-list index out of range
