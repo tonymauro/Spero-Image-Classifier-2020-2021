@@ -3,6 +3,7 @@ import pandas
 import csv
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
 from CompiledAlgorithms.elbowMethod import Elbow
 import numpy as np
 from tqdm import tqdm
@@ -41,7 +42,7 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = True
+        self.NORMALIZE = 2
 
         self.ALG = None
 
@@ -67,11 +68,20 @@ class ClusteringAlgorithm:
 
     def normalize(self):
         img = np.array(self.origImage)
-        if self.NORMALIZE:
-            print("Normalizing Pixels")
+
+        if self.NORMALIZE == 1:
+            print("Normalizing Pixels with StandardScaler")
             scaler = StandardScaler()
             for i in tqdm(range(img.shape[0])):
                 for j in range(img.shape[1]):
+                    img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
+        elif self.NORMALIZE == 2:
+            print("Normalizing Pixels with a Linear Regressor")
+            x = np.transpose([self.WAVELENGTHS])
+            for i in tqdm(range(img.shape[0])):
+                for j in range(img.shape[1]):
+                    model = LinearRegression().fit(x, img[i, j])
+                    img[i, j] = np.subtract(img[i, j], model.predict(x))
                     img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
         self.normalizedImage=img
 
