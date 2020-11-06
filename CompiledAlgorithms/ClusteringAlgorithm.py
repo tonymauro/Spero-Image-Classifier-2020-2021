@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas
 import csv
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from CompiledAlgorithms.elbowMethod import Elbow
 import numpy as np
 
@@ -20,6 +21,7 @@ class ClusteringAlgorithm:
         self.IMAGE = None
         self.imageName = imageName
         self.origImage = path
+        self.normalizedImage = None
 
         # image info
         self.CLUSTERS = None
@@ -37,6 +39,9 @@ class ClusteringAlgorithm:
         self.PCAON = True
         self.PCADIMENSIONS = 0
 
+        #normalize
+        self.NORMALIZE = True
+
         self.ALG = None
 
     def find_centers(self):
@@ -44,6 +49,8 @@ class ClusteringAlgorithm:
         finds average of spectra of all pixels in a cluster
         """
         points = self.origImage
+        if self.NORMALIZE:
+            points = self.normalizedImage
         c = 0
         centers = np.zeros((self.CLUSTERS, points.shape[2]))
         counts = np.zeros(self.CLUSTERS)
@@ -72,10 +79,17 @@ class ClusteringAlgorithm:
         # reshapes image into 2D array shape (x*y, z)
         # Kmeans only takes in 2D arrays
         img = np.array(ei.Pixels)
+        if self.NORMALIZE:
+            scaler = StandardScaler()
+            for i in range(img.shape[0]):
+                for j in range(img.shape[1]):
+                    img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
+        self.normalizedImage=img
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
 
         # Kmeans clustering
         # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
+
 
         if self.PCAON:
             pca = PCA()
@@ -83,13 +97,13 @@ class ClusteringAlgorithm:
             # print(pca.explained_variance_ratio_)
             sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
-                if pca.explained_variance_ratio_[x] > 0.001:
+                if pca.explained_variance_ratio_[x] > 0.01:
                     sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:
                     break
             print(sum)
-            print(self.PCADIMENSIONS)
+            #print(self.PCADIMENSIONS)
             pca = PCA(n_components=self.PCADIMENSIONS)
             pca.fit(img)
             print(pca.explained_variance_ratio_)
