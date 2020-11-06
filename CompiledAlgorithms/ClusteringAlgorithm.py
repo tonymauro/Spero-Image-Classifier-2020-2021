@@ -76,8 +76,9 @@ class ClusteringAlgorithm:
                 for j in range(img.shape[1]):
                     img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
         elif self.NORMALIZE == 2:
-            print("Normalizing Pixels with a Linear Regressor")
+            print("Normalizing Pixels with Linear regression")
             x = np.transpose([self.WAVELENGTHS])
+            scaler = StandardScaler()
             for i in tqdm(range(img.shape[0])):
                 for j in range(img.shape[1]):
                     model = LinearRegression().fit(x, img[i, j])
