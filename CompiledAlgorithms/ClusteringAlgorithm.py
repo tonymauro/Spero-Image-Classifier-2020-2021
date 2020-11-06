@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from CompiledAlgorithms.elbowMethod import Elbow
 import numpy as np
+from tqdm import tqdm
 
 from CompiledAlgorithms.ENVI_Files import Envi
 from sklearn.decomposition import PCA
@@ -67,8 +68,9 @@ class ClusteringAlgorithm:
     def normalize(self):
         img = np.array(self.origImage)
         if self.NORMALIZE:
+            print("Normalizing Pixels")
             scaler = StandardScaler()
-            for i in range(img.shape[0]):
+            for i in tqdm(range(img.shape[0])):
                 for j in range(img.shape[1]):
                     img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
         self.normalizedImage=img
@@ -96,18 +98,18 @@ class ClusteringAlgorithm:
 
 
         if self.PCAON:
+            print("\nReducing Dimensions with PCA")
             pca = PCA()
             pca.fit(img)
             # print(pca.explained_variance_ratio_)
-            sum = 0
+            var_sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
                 if pca.explained_variance_ratio_[x] > 0.01:
-                    sum += pca.explained_variance_ratio_[x]
+                    var_sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:
                     break
-            print(sum)
-            #print(self.PCADIMENSIONS)
+            print(f"{var_sum*100}% of signal represented with {self.PCADIMENSIONS} pixel dimensions\n")
             pca = PCA(n_components=self.PCADIMENSIONS)
             pca.fit(img)
             print(pca.explained_variance_ratio_)

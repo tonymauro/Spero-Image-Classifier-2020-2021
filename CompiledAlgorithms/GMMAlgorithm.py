@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import PCA
+from tqdm import tqdm
 
 from .elbowMethod import Elbow
 from .ENVI_Files import Envi
@@ -19,7 +20,7 @@ class DominantColorsGMM(ClusteringAlgorithm):
 
     def cluster(self, img):
         # Runs the Scikitlearn algorithm with the determined number of clusters
-        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='full')
+        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='full', verbose=1)
         gmm.fit(img)
 
         # Centroids are the "average clusters" of each cluster
