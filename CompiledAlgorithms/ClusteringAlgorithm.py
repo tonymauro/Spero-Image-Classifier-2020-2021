@@ -4,12 +4,14 @@ import csv
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from CompiledAlgorithms.elbowMethod import Elbow
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
 import numpy as np
 from tqdm import tqdm
 
-from CompiledAlgorithms.ENVI_Files import Envi
-from sklearn.decomposition import PCA
+from .ENVI_Files import Envi
+from .elbowMethod import Elbow
+from .silhouetteMethod import Silhouette
 import datetime
 
 
@@ -42,7 +44,10 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = 2
+        self.NORMALIZE = 0
+
+        # cluster enum
+        self.CLUSTER_ENUM = 'silhouette'
 
         self.ALG = None
 
@@ -125,11 +130,16 @@ class ClusteringAlgorithm:
             print(pca.explained_variance_ratio_)
             img = pca.fit_transform(img)
 
+        print("Finding optimal number of clusters")
         self.IMAGE = img
-        if self.cluster_override == 0:
-            self.CLUSTERS = Elbow.elbowMethod(self, self.IMAGE)
-        else:
-            self.CLUSTERS = self.cluster_override
+        if self.CLUSTER_ENUM == 'elbow':
+            if self.cluster_override == 0:
+                self.CLUSTERS = Elbow.elbowMethod(self, self.IMAGE)
+            else:
+                self.CLUSTERS = self.cluster_override
+        elif self.CLUSTER_ENUM == 'silhouette':
+            self.CLUSTERS = Silhouette(range(2, 15)).silhouetteMethod(img)
+            print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
         
         return img
 
