@@ -47,7 +47,7 @@ class ClusteringAlgorithm:
         self.NORMALIZE = 0
 
         # cluster enum
-        self.CLUSTER_ENUM = 'silhouette'
+        self.CLUSTER_ENUM = 'elbow'
 
         self.ALG = None
 
