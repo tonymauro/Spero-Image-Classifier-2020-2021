@@ -48,9 +48,6 @@ class ClusteringAlgorithm:
         #normalize
         self.NORMALIZE = 1
 
-        # normalize
-        self.NORMALIZE = 0
-
 
         # cluster enum
         self.CLUSTER_ENUM = 'bic'
