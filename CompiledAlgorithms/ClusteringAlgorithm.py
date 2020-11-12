@@ -44,7 +44,7 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = 0
+        self.NORMALIZE = 1
 
         # cluster enum
         self.CLUSTER_ENUM = 'elbow'
@@ -101,18 +101,13 @@ class ClusteringAlgorithm:
 
         # Saves original image for later use in display
         self.origImage = ei.Pixels
-        # Supposed to be wavenumbers but ENVI reader's variable is called wavelengths
         self.WAVELENGTHS = ei.wavelength
-        # reshapes image into 2D array shape (x*y, z)
-        # Kmeans only takes in 2D arrays
+        # Normalizes image for shape
         self.normalize()
         img = self.normalizedImage
+        # reshapes image into 2D array shape (x*y, z)
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
-
-        # Kmeans clustering
-        # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
-
-
+        #reduces dimensions through pca
         if self.PCAON:
             print("\nReducing Dimensions with PCA")
             pca = PCA()
@@ -130,7 +125,7 @@ class ClusteringAlgorithm:
             pca.fit(img)
             print(pca.explained_variance_ratio_)
             img = pca.fit_transform(img)
-
+        # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
         print("Finding optimal number of clusters")
         self.IMAGE = img
         if self.CLUSTER_ENUM == 'elbow':
@@ -139,7 +134,7 @@ class ClusteringAlgorithm:
             else:
                 self.CLUSTERS = self.cluster_override
         elif self.CLUSTER_ENUM == 'silhouette':
-            self.CLUSTERS = Silhouette(range(2, 15)).silhouetteMethod(img)
+            self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
         
         return img
