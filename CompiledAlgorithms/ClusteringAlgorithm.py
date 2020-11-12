@@ -12,6 +12,7 @@ from tqdm import tqdm
 from .ENVI_Files import Envi
 from .elbowMethod import Elbow
 from .silhouetteMethod import Silhouette
+from .BICMethod import BIC
 import datetime
 
 
@@ -52,7 +53,7 @@ class ClusteringAlgorithm:
 
 
         # cluster enum
-        self.CLUSTER_ENUM = 'elbow'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
@@ -143,13 +144,15 @@ class ClusteringAlgorithm:
         self.IMAGE = img
         if self.CLUSTER_ENUM == 'elbow':
             if self.cluster_override == 0:
-                self.CLUSTERS = Elbow.elbowMethod(self, self.IMAGE)
+                self.CLUSTERS = Elbow.elbowMethod(self, selfIMAGE)
             else:
                 self.CLUSTERS = self.cluster_override
         elif self.CLUSTER_ENUM == 'silhouette':
             self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
-
+        elif self.CLUSTER_ENUM == 'bic':
+            self.CLUSTERS = BIC(range(1, 15)).bicMethod(img)
+            print(f"Lowest BIC score at {self.CLUSTERS} clusters")
         return img
 
     def plot(self):
