@@ -75,6 +75,7 @@ class MainWindow(QMainWindow):
         self.DropDownList.addItem("Gaussian Mixture Model: Scikit-Learn")
         self.DropDownList.addItem("Custom K-Means Clustering Algorithm")
         self.DropDownList.addItem("Hierarchical Clustering Algorithm: Scikit-Learn")
+        self.DropDownList.addItem("Experimental")
         self.DropDownList.currentIndexChanged.connect(self.checkDropDown)
 
         # Adds folowing widgets to hLayout for file selection section
@@ -323,6 +324,9 @@ class MainWindow(QMainWindow):
                                            decimate_factor=decimateOverride)
             elif self.DropDownList.currentText() == "Gaussian Mixture Model: Scikit-Learn":
                 runner.run_GMMAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
+                                           decimate_factor=decimateOverride)
+            elif self.DropDownList.currentText() == "Experimental":
+                runner.run_EXPAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
                                            decimate_factor=decimateOverride)
             self.newWindow.close()
             self.show()

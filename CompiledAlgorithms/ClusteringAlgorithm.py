@@ -43,8 +43,13 @@ class ClusteringAlgorithm:
         self.PCAON = True
         self.PCADIMENSIONS = 0
 
+
         #normalize
         self.NORMALIZE = 1
+
+        # normalize
+        self.NORMALIZE = 0
+
 
         # cluster enum
         self.CLUSTER_ENUM = 'elbow'
@@ -59,16 +64,17 @@ class ClusteringAlgorithm:
         if self.NORMALIZE:
             points = self.normalizedImage
         c = 0
+        self.CLUSTERS = np.max(self.LABELS) + 1
         centers = np.zeros((self.CLUSTERS, points.shape[2]))
         counts = np.zeros(self.CLUSTERS)
         for x in range(points.shape[0]):
             for y in range(points.shape[1]):
-                centers[self.LABELS[c]] += points[x,y]
+                centers[self.LABELS[c]] += points[x, y]
                 counts[self.LABELS[c]] += 1
                 c += 1
         for i in range(self.CLUSTERS):
             centers[i] /= counts[i]
-        print(centers)
+        # print(centers)
         return centers
 
     def normalize(self):
@@ -89,7 +95,7 @@ class ClusteringAlgorithm:
                     model = LinearRegression().fit(x, img[i, j])
                     img[i, j] = np.subtract(img[i, j], model.predict(x))
                     img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
-        self.normalizedImage=img
+        self.normalizedImage = img
 
     def findDominant(self):
         # Creates ENVI Object and reads the image at the given path
@@ -107,7 +113,14 @@ class ClusteringAlgorithm:
         img = self.normalizedImage
         # reshapes image into 2D array shape (x*y, z)
         img = img.reshape((ei.Pixels.shape[0] * ei.Pixels.shape[1], ei.Pixels.shape[2]))
+
         #reduces dimensions through pca
+
+
+        # Kmeans clustering
+        # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
+
+
         if self.PCAON:
             print("\nReducing Dimensions with PCA")
             pca = PCA()
@@ -120,7 +133,7 @@ class ClusteringAlgorithm:
                     self.PCADIMENSIONS += 1
                 else:
                     break
-            print(f"{var_sum*100}% of signal represented with {self.PCADIMENSIONS} pixel dimensions\n")
+            print(f"{var_sum * 100}% of signal represented with {self.PCADIMENSIONS} pixel dimensions\n")
             pca = PCA(n_components=self.PCADIMENSIONS)
             pca.fit(img)
             print(pca.explained_variance_ratio_)
@@ -136,7 +149,7 @@ class ClusteringAlgorithm:
         elif self.CLUSTER_ENUM == 'silhouette':
             self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
-        
+
         return img
 
     def plot(self):
@@ -147,8 +160,12 @@ class ClusteringAlgorithm:
         # Temporary solution for color key. Require better method of creating differentiable colors
         # (Currently only selects colors from the colorChoices array)
         # If number of clusters > len(colorChoices) algorithm output would be wrong.
-        colorChoices = [[0, 1, 0], [1, 0, 0], [0, 1, 1], [0.5, 0.5, 0], [1, 0, 1], [1, .5, 1], [1, 0, 1], [0, 0, 1],
-                        [.5, .5, .5], [.5, .5, 1]]
+        colorChoices = [[1, 0, 0], [1, 1, 0], [0, 0.92, 1], [0.66, 0, 1], [1, 0.5, 0], [0.75, 1, 1], [0, 0.58, 1], [1, 0, 0.66],
+                        [1, 0.83, 0], [0.42, 1, 0], [0.93, 0.73, 0.73], [0.73,0.84,0.93],[0.9,0.91,0.73],[0.86,0.73,0.93],[0.73,0.93,0.88],
+                        [0.56,0.14,0.14],[0.14,0.38,0.56],[0.56,0.42,0.14],[0.42,0.14,0.56],[0.31,0.56,0.14],[0,0,0],[0.45,0.45,0.45],[0.8,0.8,0.8]]
+        """colorChoices = [[0, 1, 0], [1, 0, 0], [0, 1, 1], [0.5, 0.5, 0], [1, 0, 1], [1, .5, 1], [1, 0, 1], [0, 0, 1],
+                        [.5, .5, .5], [.5, .5, 1]]"""
+
         # Plots the wavenumber vs absorption graph for each centroid color coded
         plt.figure()
         plt.ylabel('Absorption')
@@ -179,7 +196,6 @@ class ClusteringAlgorithm:
         plt.imshow(newImg)
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredImage.png", bbox_inches="tight", pad_inches=0)
 
-
         self.makeCSV()
         print(datetime.datetime.now())
 
@@ -202,4 +218,4 @@ class ClusteringAlgorithm:
                 writer.writerow(tempDict)
 
         df = pandas.read_csv(path)
-        print(df)
+        # print(df)

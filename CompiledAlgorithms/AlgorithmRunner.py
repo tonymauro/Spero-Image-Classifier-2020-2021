@@ -1,6 +1,7 @@
 from CompiledAlgorithms.HierarchicalAlgorithm import HierarchicalClusterAlgorithm
 from CompiledAlgorithms.KMeansAlgorithm import DominantColorsKMeans
 from CompiledAlgorithms.GMMAlgorithm import DominantColorsGMM
+from CompiledAlgorithms.EXPAlgorithm import DominantColorsEXP
 from CompiledAlgorithms.CustomKMeansAlgorithm import KMeans
 from CompiledAlgorithms.elbowMethod import Elbow
 
@@ -19,6 +20,9 @@ class AlgorithmRunner:
         return algorithm.findDominant()
     def run_GMMAlgorithm(self, image_path, image_name, result_folder, cluster_override=0, decimate_factor=1):
         algorithm = DominantColorsGMM(image_path, image_name, result_folder, cluster_override, decimate_factor)
+        return algorithm.findDominant()
+    def run_EXPAlgorithm(self, image_path, image_name, result_folder, cluster_override=0, decimate_factor=1):
+        algorithm = DominantColorsEXP(image_path, image_name, result_folder, cluster_override, decimate_factor)
         return algorithm.findDominant()
 
     def run_CustomKMeansAlgorithm(self, image_path, filename , result_folder, custom_clusters=0, decimation=1, max_iterations=30):

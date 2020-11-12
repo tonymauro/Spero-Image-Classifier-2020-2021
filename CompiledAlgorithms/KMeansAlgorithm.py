@@ -31,7 +31,7 @@ class DominantColorsKMeans(ClusteringAlgorithm):
                 c += 1
         for i in range(self.CLUSTERS):
             centers[i] /= counts[i]
-        print(centers)
+        #print(centers)
         return centers
 
     def cluster(self, img):
