@@ -13,6 +13,7 @@ from .ENVI_Files import Envi
 from .elbowMethod import Elbow
 from .silhouetteMethod import Silhouette
 from .BICMethod import BIC
+from .AICMethod import AIC
 import datetime
 
 
@@ -46,7 +47,7 @@ class ClusteringAlgorithm:
 
 
         #normalize
-        self.NORMALIZE = 1
+        self.NORMALIZE = 0
 
 
         # cluster enum
@@ -150,6 +151,9 @@ class ClusteringAlgorithm:
         elif self.CLUSTER_ENUM == 'bic':
             self.CLUSTERS = BIC(range(1, 15)).bicMethod(img)
             print(f"Lowest BIC score at {self.CLUSTERS} clusters")
+        elif self.CLUSTER_ENUM == 'aic':
+            self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
+            print(f"Lowest AIC score at {self.CLUSTERS} clusters")
         return img
 
     def plot(self):
