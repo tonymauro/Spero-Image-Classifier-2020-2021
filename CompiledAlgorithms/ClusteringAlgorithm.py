@@ -136,13 +136,13 @@ class ClusteringAlgorithm:
             pca = PCA(n_components=self.PCADIMENSIONS)
             pca.fit(img)
             print(pca.explained_variance_ratio_)
-            img = pca.fit_transform(img)
+            img = pca.transform(img)
         # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
         print("Finding optimal number of clusters")
         self.IMAGE = img
         if self.CLUSTER_ENUM == 'elbow':
             if self.cluster_override == 0:
-                self.CLUSTERS = Elbow.elbowMethod(self, selfIMAGE)
+                self.CLUSTERS = Elbow.elbowMethod(self, img)
             else:
                 self.CLUSTERS = self.cluster_override
         elif self.CLUSTER_ENUM == 'silhouette':
