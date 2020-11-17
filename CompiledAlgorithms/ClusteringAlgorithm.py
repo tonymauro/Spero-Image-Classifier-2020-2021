@@ -156,8 +156,7 @@ class ClusteringAlgorithm:
             self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
             print(f"Lowest AIC score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'gap':
-            thisGap=Gap()
-            self.CLUSTERS = thisGap.getGap(KMeans(),img)
+            self.CLUSTERS = Gap().getGap(KMeans(),img)
             print(f"Lowest gap score at {self.CLUSTERS} clusters")
         return img
 
