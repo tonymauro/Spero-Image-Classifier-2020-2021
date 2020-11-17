@@ -17,9 +17,13 @@ class Gap:
 
     # Method to compute the inertia for the given cluster and dataset
     def getInertia(self, a, X):
+        kmeanmodel = KMeans(n_clusters=np.max(a)+1).fit(X)
+        return kmeanmodel.inertia_
+    """
+    def getInertia(self, a, X):
         z = [np.mean(pairwise_distances(X[a == c, :])) for c in np.unique(a)]
         return np.mean(z)
-
+    """
     # Method to compute the gap statistic of the given (data), with the given clustering (algorithm) ie: KMeans()
     # (kmax) represents the upper limit of the number of clusters
     # (nrefs) represents the number of reference data sets that will be created
