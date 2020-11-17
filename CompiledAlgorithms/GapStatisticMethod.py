@@ -46,7 +46,7 @@ class Gap:
         data_inertia = []
         for k in range(1, kmax):
             algorithm.n_clusters = k
-            assignments = algorithm.fit_redict(data)
+            assignments = algorithm.fit_predict(data)
             data_inertia.append(self.getInertia(assignments, data))
 
         # creates an array of gap values for all k, using the gap statistics given formula

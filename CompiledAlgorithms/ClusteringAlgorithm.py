@@ -14,6 +14,7 @@ from .elbowMethod import Elbow
 from .silhouetteMethod import Silhouette
 from .BICMethod import BIC
 from .AICMethod import AIC
+from .GapStatisticMethod import Gap
 import datetime
 
 
@@ -51,7 +52,7 @@ class ClusteringAlgorithm:
 
 
         # cluster enum
-        self.CLUSTER_ENUM = 'bic'
+        self.CLUSTER_ENUM = 'gap'
 
         self.ALG = None
 
@@ -154,6 +155,10 @@ class ClusteringAlgorithm:
         elif self.CLUSTER_ENUM == 'aic':
             self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
             print(f"Lowest AIC score at {self.CLUSTERS} clusters")
+        elif self.CLUSTER_ENUM == 'gap':
+            thisGap=Gap()
+            self.CLUSTERS = thisGap.getGap(KMeans(),img)
+            print(f"Lowest gap score at {self.CLUSTERS} clusters")
         return img
 
     def plot(self):
