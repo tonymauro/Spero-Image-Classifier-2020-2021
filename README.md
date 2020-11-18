@@ -6,8 +6,10 @@ Decimation Factor - An option for the user to reduce the the spectrum by a certa
 not suggested for smaller ENVI images)
 Save Directory - User can choose where the results will be saved (Default is CompiledAlgorithms/Result)
 
-Elbow Method - Determines optimal amount of clusters by running the clustering algorithm multiple times with different clusters.
+Elbow Method - Determines the optimal amount of clusters by running the clustering algorithm multiple times with different clusters.
 Uses multithreading to speed up process by running all tests at the same time.
+
+Silhouette Method - Determines the optimal amount of clusters by running the clustering algorithm multiple times with different clusters, and calculating the silhouette score for each iteration. Uses cluster iteration with highest silhouette score as the optimal amount of clusters.
 
 GUI Specific Pixel Spectrum Feature - Currently not accurate 100% of the time due to image scaling from the GUI output. Need to find a better
 solution than recalculating resize scale(Due to rounding).
