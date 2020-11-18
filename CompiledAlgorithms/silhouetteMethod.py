@@ -43,6 +43,7 @@ class Silhouette:
     def __init__(self, cluster_range):
         self.cluster_range = cluster_range
         self.avg_sil = []
+
     def silhouetteMethod(self, X):
         for n_clusters in tqdm(self.cluster_range):
             clusterer = KMeans(n_clusters=n_clusters)
