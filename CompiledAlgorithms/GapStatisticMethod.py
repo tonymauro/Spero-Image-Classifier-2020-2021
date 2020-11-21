@@ -57,4 +57,4 @@ class Gap:
         gaps = np.log(np.mean(ref_inertia)) - np.log(data_inertia)
 
         # returns the index of the largest gap value, representing the determined optimal number of clusters
-        return gaps.argmax() + 1
+        return np.argmax(gaps) + 1
