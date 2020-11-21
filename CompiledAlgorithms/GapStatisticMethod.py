@@ -15,7 +15,7 @@ class Gap:
     def __init__(self):
         return
 
-    # Method to compute the inertia for the given cluster and dataset
+    # Method to compute the inertia for the given cluster and data set
     def getInertia(self, a, X):
         z = [np.mean(pairwise_distances(X[a == c, :])) for c in np.unique(a)]
         return np.mean(z)
