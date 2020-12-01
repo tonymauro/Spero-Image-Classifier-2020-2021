@@ -9,6 +9,7 @@ class DeD_Enumerator():
     def __init__(self, data):
         # data is a numpy array
         self.data = data
+        self.depths = self.mahalanobis(data)
 
     def mahalanobis(self, data):
         """
@@ -17,34 +18,41 @@ class DeD_Enumerator():
         covariance_mat = np.cov(data.T)
         try:
             inv_covmat = np.linalg.inv(covariance_mat)
-        except np.LinAlgError:
+        except np.linalg.LinAlgError:
             print("Could not invert covariance matrix")
             sys.exit(0)
+        
+        """returns an n_sample by n_features array
+        # each feature in each sample is subtracted from the average value of that feature
+        across all samples"""
         x_minus_mu = data - np.mean(data, axis=0)
-        mult = np.dot(x_minus_mu, inv_covmat)
         # if the array is one dimensional make it 2d so it can be transposed
+        mult = np.matmul(x_minus_mu, inv_covmat)
         if x_minus_mu.shape[0] == 1:
             x_minus_mu = [x_minus_mu]
-        mult = np.dot(mult, x_minus_mu.T)
-        mahal = mult + 1
-        if mahal.shape[0] != 1:
-            mahal = mahal.T
-        return mahal
+        mult = np.matmul(mult, x_minus_mu.T)
+
+        try:
+            mahal = np.linalg.inv(mult + 1)
+        except np.linalg.LinAlgError:
+            print("Could not invert final matrix")
+            sys.exit(0)
+
+        return mahal.diagonal()
 
     def optimal_k(self, krange):
         """
         returns the optimal number of clusters, k
         """
-        depths = self.mahalanobis(self.data)
+        depths = self.depths
         depth_median = self.depth_median(depths)
         avg_delta = self.avg_delta(depths, depth_median)
         depth_diffs = []
         # calculating depth difference for different number of clusters
         for k in tqdm(krange):
-            rng = math.floor(len(self.data)/k)
+            rng = math.floor(self.data.shape[0]/k)
             start = 0
             end = 0
-            cluster_depths = []
             cluster_depth_medians = []
             cluster_avg_deltas = []
             # going through each of the k clusters
@@ -66,7 +74,6 @@ class DeD_Enumerator():
             depth_diffs.append(depth_diff)
         # finds index of maximum value in list
         optimal_k_index = depth_diffs.index(max(depth_diffs))
-        print(depth_diffs)
         return krange[optimal_k_index]
 
     def depth_diff(self, depth_within, depth_between):
@@ -98,8 +105,7 @@ class DeD_Enumerator():
         """
         returns the point with the maximum depth in the dataset
         """
-        depth_med_index = np.where(depths == np.max(depths))
-        return depths[depth_med_index]
+        return np.max(depths)
 
 dataset = make_blobs(n_samples=100, n_features=5, centers=4)
 ded = DeD_Enumerator(dataset[0])
