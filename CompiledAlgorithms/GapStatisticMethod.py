@@ -15,7 +15,7 @@ class Gap:
     def __init__(self):
         return
 
-    # Method to compute the inertia for the given cluster and dataset
+    # Method to compute the inertia for the given cluster and data set
     def getInertia(self, a, X):
         kmeanmodel = KMeans(n_clusters=np.max(a)+1).fit(X)
         return kmeanmodel.inertia_
@@ -57,4 +57,4 @@ class Gap:
         gaps = np.log(np.mean(ref_inertia)) - np.log(data_inertia)
 
         # returns the index of the largest gap value, representing the determined optimal number of clusters
-        return gaps.argmax() + 1
+        return np.argmax(gaps) + 1

@@ -52,7 +52,7 @@ class ClusteringAlgorithm:
 
 
         # cluster enum
-        self.CLUSTER_ENUM = 'gap'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
@@ -61,7 +61,8 @@ class ClusteringAlgorithm:
         finds average of spectra of all pixels in a cluster
         """
         points = self.origImage
-        if self.NORMALIZE:
+        if self.NORMALIZE != 0:
+            self.normalize()
             points = self.normalizedImage
         c = 0
         self.CLUSTERS = np.max(self.LABELS) + 1
@@ -150,7 +151,7 @@ class ClusteringAlgorithm:
             self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'bic':
-            self.CLUSTERS = BIC(range(1, 15)).bicMethod(img)
+            self.CLUSTERS = BIC(range(1, 15)).customBIC(img)
             print(f"Lowest BIC score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'aic':
             self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
