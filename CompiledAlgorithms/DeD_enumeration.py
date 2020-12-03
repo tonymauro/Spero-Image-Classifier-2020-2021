@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import sys
 import math
+from scipy.spatial.distance import mahalanobis
 
 from sklearn.datasets.samples_generator import make_blobs
 
@@ -12,33 +13,21 @@ class DeD_Enumerator():
         self.depths = self.mahalanobis(data)
 
     def mahalanobis(self, data):
-        """
-        calculates the Mahalanobis depth for each point in the dataset
-        """
+        mean = np.mean(data, axis=0)
         covariance_mat = np.cov(data.T)
         try:
             inv_covmat = np.linalg.inv(covariance_mat)
         except np.linalg.LinAlgError:
             print("Could not invert covariance matrix")
             sys.exit(0)
-        
-        """returns an n_sample by n_features array
-        # each feature in each sample is subtracted from the average value of that feature
-        across all samples"""
-        x_minus_mu = data - np.mean(data, axis=0)
-        # if the array is one dimensional make it 2d so it can be transposed
-        mult = np.matmul(x_minus_mu, inv_covmat)
-        if x_minus_mu.shape[0] == 1:
-            x_minus_mu = [x_minus_mu]
-        mult = np.matmul(mult, x_minus_mu.T)
 
-        try:
-            mahal = np.linalg.inv(mult + 1)
-        except np.linalg.LinAlgError:
-            print("Could not invert final matrix")
-            sys.exit(0)
+        depths = []
+        for p in data:
+            depths.append(mahalanobis(p, mean, inv_covmat))
 
-        return mahal.diagonal()
+        depths = list(map(lambda x: x**2, depths))
+
+        return depths
 
     def optimal_k(self, krange):
         """
@@ -107,8 +96,8 @@ class DeD_Enumerator():
         """
         return np.max(depths)
 
-dataset = make_blobs(n_samples=100, n_features=5, centers=4)
+"""dataset = make_blobs(n_samples=150, n_features=5, centers=3)
 ded = DeD_Enumerator(dataset[0])
 #print(dataset[0])
-optimalk = ded.optimal_k(range(2, 11))
-print(optimalk)
+optimalk = ded.optimal_k(range(2, 20))
+print(optimalk)"""

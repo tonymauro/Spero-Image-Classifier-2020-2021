@@ -15,6 +15,7 @@ from .silhouetteMethod import Silhouette
 from .BICMethod import BIC
 from .AICMethod import AIC
 from .GapStatisticMethod import Gap
+from .DeD_enumeration import DeD_Enumerator
 import datetime
 
 
@@ -52,7 +53,7 @@ class ClusteringAlgorithm:
 
 
         # cluster enum
-        self.CLUSTER_ENUM = 'bic'
+        self.CLUSTER_ENUM = 'ded'
 
         self.ALG = None
 
@@ -139,12 +140,14 @@ class ClusteringAlgorithm:
             pca.fit(img)
             print(pca.explained_variance_ratio_)
             img = pca.transform(img)
-        # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
         print("Finding optimal number of clusters")
         self.IMAGE = img
+        # cluster enumeration algorithms
         if self.CLUSTER_ENUM == 'elbow':
+            # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
             if self.cluster_override == 0:
                 self.CLUSTERS = Elbow.elbowMethod(self, img)
+                print(f"Elbow at {self.CLUSTERS} clusters")
             else:
                 self.CLUSTERS = self.cluster_override
         elif self.CLUSTER_ENUM == 'silhouette':
@@ -159,6 +162,9 @@ class ClusteringAlgorithm:
         elif self.CLUSTER_ENUM == 'gap':
             self.CLUSTERS = Gap().getGap(KMeans(n_init=20),img)
             print(f"Lowest gap score at {self.CLUSTERS} clusters")
+        elif self.CLUSTER_ENUM == 'ded':
+            self.CLUSTERS = DeD_Enumerator(img).optimal_k(range(2, 11))
+            print(f"Optimal number of DeD clusters: {self.CLUSTERS} clusters")
         return img
 
     def plot(self):
