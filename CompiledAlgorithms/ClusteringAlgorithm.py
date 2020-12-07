@@ -165,6 +165,8 @@ class ClusteringAlgorithm:
         elif self.CLUSTER_ENUM == 'ded':
             self.CLUSTERS = DeD_Enumerator(img).optimal_k(range(2, 11))
             print(f"Optimal number of DeD clusters: {self.CLUSTERS} clusters")
+
+        print('\nRunning Clustering Algorithm...')
         return img
 
     def plot(self):

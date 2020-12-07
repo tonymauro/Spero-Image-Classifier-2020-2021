@@ -4,15 +4,15 @@ import sys
 import math
 from scipy.spatial.distance import mahalanobis
 
-from sklearn.datasets.samples_generator import make_blobs
+#from sklearn.datasets.samples_generator import make_blobs
 
 class DeD_Enumerator():
     def __init__(self, data):
         # data is a numpy array
         self.data = data
-        self.depths = self.mahalanobis(data)
+        self.depths = self.mahalanobis_calc(data)
 
-    def mahalanobis(self, data):
+    def mahalanobis_calc(self, data):
         mean = np.mean(data, axis=0)
         covariance_mat = np.cov(data.T)
         try:
@@ -23,9 +23,8 @@ class DeD_Enumerator():
 
         depths = []
         for p in data:
+            # the mahalanobis function is the one from scipy. Not recursion.
             depths.append(mahalanobis(p, mean, inv_covmat))
-
-        depths = list(map(lambda x: x**2, depths))
 
         return depths
 
@@ -35,6 +34,7 @@ class DeD_Enumerator():
         """
         depths = self.depths
         depth_median = self.depth_median(depths)
+        print(depth_median)
         avg_delta = self.avg_delta(depths, depth_median)
         depth_diffs = []
         # calculating depth difference for different number of clusters
