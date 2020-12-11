@@ -8,9 +8,13 @@ from scipy.spatial.distance import mahalanobis
 
 class DeD_Enumerator():
     def __init__(self, data):
+        self.randomize = True
         # data is a numpy array
-        self.data = data
-        self.depths = self.mahalanobis_calc(data)
+        self.data = np.copy(data)
+        if self.randomize:
+            # randomly shuffle the data
+            np.random.shuffle(self.data)
+        self.depths = self.mahalanobis_calc(self.data)
 
     def mahalanobis_calc(self, data):
         mean = np.mean(data, axis=0)
