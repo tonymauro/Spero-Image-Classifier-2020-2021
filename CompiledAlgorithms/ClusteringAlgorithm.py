@@ -48,10 +48,10 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = 0
+        self.NORMALIZE = 1
 
         # cluster enum
-        self.CLUSTER_ENUM = 'ded'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
@@ -61,7 +61,6 @@ class ClusteringAlgorithm:
         """
         points = self.origImage
         if self.NORMALIZE != 0:
-            self.normalize()
             points = self.normalizedImage
         c = 0
         self.CLUSTERS = np.max(self.LABELS) + 1
@@ -128,7 +127,7 @@ class ClusteringAlgorithm:
             # print(pca.explained_variance_ratio_)
             var_sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
-                if pca.explained_variance_ratio_[x] > 0.01:
+                if pca.explained_variance_ratio_[x] > 0.10:
                     var_sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:
@@ -152,8 +151,8 @@ class ClusteringAlgorithm:
             self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'bic':
-            self.CLUSTERS = BIC(range(1, 15)).customBIC(img)
-            print(f"Lowest BIC score at {self.CLUSTERS} clusters")
+            self.CLUSTERS = BIC(range(1, 15)).customBIC(img, self.normalizedImage.reshape((self.normalizedImage.shape[0] * self.normalizedImage.shape[1], self.normalizedImage.shape[2])))
+            print(f"Optimal BIC score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'aic':
             self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
             print(f"Lowest AIC score at {self.CLUSTERS} clusters")
