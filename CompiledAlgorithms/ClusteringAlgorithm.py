@@ -47,10 +47,8 @@ class ClusteringAlgorithm:
         self.PCAON = True
         self.PCADIMENSIONS = 0
 
-
         #normalize
         self.NORMALIZE = 0
-
 
         # cluster enum
         self.CLUSTER_ENUM = 'ded'

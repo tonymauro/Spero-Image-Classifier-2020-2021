@@ -51,9 +51,11 @@ class DeD_Enumerator():
                 end = start + rng
                 if j == k:
                     end += 1
-                cluster_depths = depths[start:end]
+                cluster = self.data[start:end]
+                # finding the depth of each point WITH RESPECT TO THE CLUSTER IT'S IN
+                cluster_depths = self.mahalanobis_calc(cluster)
                 cluster_depth_median = self.depth_median(cluster_depths)
-                cluster_avg_delta = self.avg_delta(cluster_depths, depth_median)
+                cluster_avg_delta = self.avg_delta(cluster_depths, cluster_depth_median)
                 cluster_depth_medians.append(cluster_depth_median)
                 cluster_avg_deltas.append(cluster_avg_delta)
             depth_within = self.depth_within(cluster_avg_deltas)
