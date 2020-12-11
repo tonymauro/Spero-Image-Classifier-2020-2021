@@ -51,7 +51,7 @@ class ClusteringAlgorithm:
         self.NORMALIZE = 1
 
         # cluster enum
-        self.CLUSTER_ENUM = 'ded'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
