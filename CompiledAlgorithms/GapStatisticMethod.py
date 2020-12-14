@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
-from sklearn.datasets.samples_generator import make_blobs
+from sklearn.datasets import make_blobs
 from sklearn.metrics import pairwise_distances
 
 
