@@ -37,7 +37,7 @@ class BIC:
             bic -= np.dot(clusterSizes, log_sigma)/2
             q = n_clusters*(n_clusters+3)/2
             bic -= q*np.sum(np.log(clusterSizes))/2
-            bic -= 2*n_clusters*n_clusters*n_clusters*np.sqrt(n_clusters)
+            bic -= 2*n_clusters*n_clusters*n_clusters*np.sqrt(n_clusters) #additional penalty term to prevent overenumeration
             print(bic)
             bics.append(bic)
         return self.cluster_range[bics.index(max(bics))]
