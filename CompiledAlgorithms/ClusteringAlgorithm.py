@@ -237,3 +237,13 @@ class ClusteringAlgorithm:
 
         df = pandas.read_csv(path)
         # print(df)
+        # makes CSV file of the clustered data in the given directory in case
+        # user wants to further analyze the chemical composition
+        path1 = self.RESULT_PATH + self.imageName + '_pca' + '.csv'
+
+        with open(path1, mode='w+', newline='') as csvFile:
+            writer = csv.writer(csvFile)
+            for row in self.IMAGE:
+                writer.writerow(row)
+
+        df = pandas.read_csv(path1)
