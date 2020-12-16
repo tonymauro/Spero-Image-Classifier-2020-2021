@@ -38,7 +38,6 @@ class DeD_Enumerator():
         """
         depths = self.depths
         depth_median = self.depth_median(depths)
-        print(depth_median)
         avg_delta = self.avg_delta(depths, depth_median)
         depth_diffs = []
         # calculating depth difference for different number of clusters
