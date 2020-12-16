@@ -51,7 +51,7 @@ class ClusteringAlgorithm:
         self.NORMALIZE = 1
 
         # cluster enum
-        self.CLUSTER_ENUM = 'bic'
+        self.CLUSTER_ENUM = 'elbow'
 
         self.ALG = None
 
@@ -127,7 +127,7 @@ class ClusteringAlgorithm:
             # print(pca.explained_variance_ratio_)
             var_sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
-                if pca.explained_variance_ratio_[x] > 0.10:
+                if pca.explained_variance_ratio_[x] > 0.05:
                     var_sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:
@@ -135,8 +135,12 @@ class ClusteringAlgorithm:
             print(f"{var_sum * 100}% of signal represented with {self.PCADIMENSIONS} pixel dimensions\n")
             pca = PCA(n_components=self.PCADIMENSIONS)
             pca.fit(img)
-            print(pca.explained_variance_ratio_)
+            #print(pca.explained_variance_ratio_)
             img = pca.transform(img)
+
+            # writing new image data to csv
+            #np.savetxt("pca_image.csv", img, delimiter=',')
+
         print("Finding optimal number of clusters")
         self.IMAGE = img
         # cluster enumeration algorithms
@@ -169,17 +173,17 @@ class ClusteringAlgorithm:
     def plot(self):
         points = self.origImage
         centroids = self.CENTROIDS
-        k = self.CLUSTERS
+        k = self.CLUSTERS # the number of clusters in the image
         labels = self.LABELS
         # Temporary solution for color key. Require better method of creating differentiable colors
         # (Currently only selects colors from the colorChoices array)
         # If number of clusters > len(colorChoices) algorithm output would be wrong.
-        colorChoices = [[1, 0, 0], [1, 1, 0], [0, 0.92, 1], [0.66, 0, 1], [1, 0.5, 0], [0.75, 1, 1], [0, 0.58, 1], [1, 0, 0.66],
+        # randomly generates a list of colors to apply to the clusters of the image
+        colorChoices = [np.array(np.random.choice(range(256), size=3))/255 for i in range(k)]
+        """colorChoices = [[1, 0, 0], [1, 1, 0], [0, 0.92, 1], [0.66, 0, 1], [1, 0.5, 0], [0.75, 1, 1], [0, 0.58, 1], [1, 0, 0.66],
                         [1, 0.83, 0], [0.42, 1, 0], [0.93, 0.73, 0.73], [0.73,0.84,0.93],[0.9,0.91,0.73],[0.86,0.73,0.93],[0.73,0.93,0.88],
-                        [0.56,0.14,0.14],[0.14,0.38,0.56],[0.56,0.42,0.14],[0.42,0.14,0.56],[0.31,0.56,0.14],[0,0,0],[0.45,0.45,0.45],[0.8,0.8,0.8]]
-        """colorChoices = [[0, 1, 0], [1, 0, 0], [0, 1, 1], [0.5, 0.5, 0], [1, 0, 1], [1, .5, 1], [1, 0, 1], [0, 0, 1],
-                        [.5, .5, .5], [.5, .5, 1]]"""
-
+                        [0.56,0.14,0.14],[0.14,0.38,0.56],[0.56,0.42,0.14],[0.42,0.14,0.56],[0.31,0.56,0.14],[0,0,0],[0.45,0.45,0.45],[0.8,0.8,0.8]]"""
+ 
         # Plots the wavenumber vs absorption graph for each centroid color coded
         plt.figure()
         plt.ylabel('Absorption')
