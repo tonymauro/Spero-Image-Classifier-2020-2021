@@ -51,7 +51,7 @@ class ClusteringAlgorithm:
         self.NORMALIZE = 1
 
         # cluster enum
-        self.CLUSTER_ENUM = 'elbow'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
@@ -127,7 +127,7 @@ class ClusteringAlgorithm:
             # print(pca.explained_variance_ratio_)
             var_sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
-                if pca.explained_variance_ratio_[x] > 0.05:
+                if pca.explained_variance_ratio_[x] > 0.06 or self.PCADIMENSIONS < 3:
                     var_sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:

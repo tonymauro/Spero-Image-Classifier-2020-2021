@@ -30,7 +30,6 @@ class BIC:
             log_sigma = np.zeros(n_clusters)
             for i in range(n_clusters):
                 det = np.linalg.det(np.cov(np.transpose(np.array(clusters[i]))))
-                print(det)
                 log_sigma[i] = np.log(max(det, 0.0003))
             bic = 0
             bic += np.dot(clusterSizes, np.log(clusterSizes))
