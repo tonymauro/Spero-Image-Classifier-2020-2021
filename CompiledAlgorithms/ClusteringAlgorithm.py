@@ -51,7 +51,7 @@ class ClusteringAlgorithm:
         self.NORMALIZE = 1
 
         # cluster enum
-        self.CLUSTER_ENUM = 'elbow'
+        self.CLUSTER_ENUM = 'bic'
 
         self.ALG = None
 
@@ -127,7 +127,7 @@ class ClusteringAlgorithm:
             # print(pca.explained_variance_ratio_)
             var_sum = 0
             for x in range(len(pca.explained_variance_ratio_)):
-                if pca.explained_variance_ratio_[x] > 0.05:
+                if pca.explained_variance_ratio_[x] > 0.06 or self.PCADIMENSIONS < 3:
                     var_sum += pca.explained_variance_ratio_[x]
                     self.PCADIMENSIONS += 1
                 else:
@@ -144,26 +144,30 @@ class ClusteringAlgorithm:
         print("Finding optimal number of clusters")
         self.IMAGE = img
         # cluster enumeration algorithms
-        if self.CLUSTER_ENUM == 'elbow':
-            # Uses elbow method to calculate the optimal K clusters (Unless override by user, where cluster_override != 0)
-            if self.cluster_override == 0:
-                self.CLUSTERS = Elbow.elbowMethod(self, img)
-                print(f"Elbow at {self.CLUSTERS} clusters")
-            else:
-                self.CLUSTERS = self.cluster_override
+        if self.cluster_override != 0:
+            self.CLUSTERS = self.cluster_override
+        elif self.CLUSTER_ENUM == 'elbow':
+            #elbow method
+            self.CLUSTERS = Elbow.elbowMethod(self, img)
+            print(f"Elbow at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'silhouette':
+            #silhouette method
             self.CLUSTERS = Silhouette(range(2, 8)).silhouetteMethod(img)
             print(f"Highest Avg Silhouette score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'bic':
+            #Custom BIC
             self.CLUSTERS = BIC(range(1, 15)).customBIC(img, self.normalizedImage.reshape((self.normalizedImage.shape[0] * self.normalizedImage.shape[1], self.normalizedImage.shape[2])))
             print(f"Optimal BIC score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'aic':
+            #AIC
             self.CLUSTERS = AIC(range(1, 15)).aicMethod(img)
             print(f"Lowest AIC score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'gap':
+            #Gap Statistic
             self.CLUSTERS = Gap().getGap(KMeans(n_init=20),img)
             print(f"Lowest gap score at {self.CLUSTERS} clusters")
         elif self.CLUSTER_ENUM == 'ded':
+            #DeD
             self.CLUSTERS = DeD_Enumerator(img).optimal_k(range(2, 11))
             print(f"Optimal number of DeD clusters: {self.CLUSTERS} clusters")
 

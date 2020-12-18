@@ -20,7 +20,7 @@ class DominantColorsGMM(ClusteringAlgorithm):
 
     def cluster(self, img):
         # Runs the Scikitlearn algorithm with the determined number of clusters
-        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=1, covariance_type='full', verbose=1)
+        gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=3, covariance_type='full', verbose=1)
         gmm.fit(img)
 
         # Centroids are the "average clusters" of each cluster
