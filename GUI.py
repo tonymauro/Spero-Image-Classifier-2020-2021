@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
 
         self.startButton = QPushButton("Start analysis")
 
-        # Dropdown list for list of algorithms. Checks the currently selected algorithm
+        # Dropdown list for list of clustering algorithms. Checks the currently selected algorithm
         # For suitable override options with self.checkDropDown
         self.DropDownList = QComboBox()
         self.DropDownList.addItem("Choose Clustering Algorithm")
@@ -78,6 +78,17 @@ class MainWindow(QMainWindow):
         self.DropDownList.addItem("Experimental")
         self.DropDownList.currentIndexChanged.connect(self.checkDropDown)
 
+        # Dropdown list for list of cluster enumeration algorithms.
+        self.EnumDropDownList = QComboBox()
+        self.EnumDropDownList.addItem("Choose Cluster Enumeration Method")
+        self.EnumDropDownList.addItem("Elbow")
+        self.EnumDropDownList.addItem("BIC")
+        self.EnumDropDownList.addItem("AIC")
+        self.EnumDropDownList.addItem("Gap Statistic")
+        self.EnumDropDownList.addItem("Depth Difference")
+        self.EnumDropDownList.addItem("Silhouette")
+        #self.EnumDropDownList.currentIndexChanged.connect(self.checkDropDown)
+
         # Adds folowing widgets to hLayout for file selection section
         hLayout.addWidget(self.currentDirText)
         hLayout.addWidget(self.OK_Button)
@@ -85,15 +96,17 @@ class MainWindow(QMainWindow):
         hButtonLayout.addWidget(self.startButton)
         hButtonLayout.addWidget((self.clear_Button))
 
-        # Adds hLayout, Drop Down List and hButtonLayout to vLayout
+        # Adds hLayout, Drop Down Lists and hButtonLayout to vLayout
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.DropDownList)
+        vLayout.addWidget(self.EnumDropDownList)
         vLayout.addLayout(hButtonLayout)
         # Calls the startAlgorithm function when start button is clicked, enabled false
         # By default until user has selected an algorithm and an ENVI File
         self.startButton.clicked.connect(self.startAlgorithm)
         self.startButton.setEnabled(False)
         self.uploadBox.setLayout(vLayout)
+
 
     def makeManualCustomBox(self):
         # Box for manual overrides for certain algorithms
