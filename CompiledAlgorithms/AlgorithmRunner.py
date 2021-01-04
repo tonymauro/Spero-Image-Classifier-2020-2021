@@ -9,20 +9,20 @@ from CompiledAlgorithms.elbowMethod import Elbow
 class AlgorithmRunner:
     # Runs selected algorithm with optional overrides
     # Hierarchical has n-neighbors, but not KMeans
-    def run_HierarchicalClusterAlgorithm(self, image_path, image_name, result_folder, cluster_override=0,
+    def run_HierarchicalClusterAlgorithm(self, image_path, image_name, result_folder, cluster_enum, cluster_override=0,
                                          n_neighbors_override=0, decimate_factor=1, no_results_output=False):
         alg = HierarchicalClusterAlgorithm(image_path, image_name, result_folder, cluster_override,
-                                     n_neighbors_override, decimate_factor, no_results_output)
+                                     n_neighbors_override, decimate_factor, no_results_output, cluster_enum=cluster_enum)
 
 
-    def run_kMeansAlgorithm(self, image_path, image_name, result_folder, cluster_override=0, decimate_factor=1):
-        algorithm = DominantColorsKMeans(image_path, image_name, result_folder, cluster_override, decimate_factor)
+    def run_kMeansAlgorithm(self, image_path, image_name, result_folder, cluster_enum, cluster_override=0, decimate_factor=1):
+        algorithm = DominantColorsKMeans(image_path, image_name, result_folder, cluster_override, decimate_factor, cluster_enum=cluster_enum)
         return algorithm.findDominant()
-    def run_GMMAlgorithm(self, image_path, image_name, result_folder, cluster_override=0, decimate_factor=1):
-        algorithm = DominantColorsGMM(image_path, image_name, result_folder, cluster_override, decimate_factor)
+    def run_GMMAlgorithm(self, image_path, image_name, result_folder, cluster_enum, cluster_override=0, decimate_factor=1):
+        algorithm = DominantColorsGMM(image_path, image_name, result_folder, cluster_override, decimate_factor, cluster_enum=cluster_enum)
         return algorithm.findDominant()
-    def run_EXPAlgorithm(self, image_path, image_name, result_folder, cluster_override=0, decimate_factor=1):
-        algorithm = DominantColorsEXP(image_path, image_name, result_folder, cluster_override, decimate_factor)
+    def run_EXPAlgorithm(self, image_path, image_name, result_folder, cluster_enum, cluster_override=0, decimate_factor=1):
+        algorithm = DominantColorsEXP(image_path, image_name, result_folder, cluster_override, decimate_factor, cluster_enum=cluster_enum)
         return algorithm.findDominant()
 
     def run_CustomKMeansAlgorithm(self, image_path, filename , result_folder, custom_clusters=0, decimation=1, max_iterations=30):

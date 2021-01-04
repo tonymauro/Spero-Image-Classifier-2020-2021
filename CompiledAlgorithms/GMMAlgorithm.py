@@ -14,8 +14,8 @@ from .ClusteringAlgorithm import ClusteringAlgorithm
 
 class DominantColorsGMM(ClusteringAlgorithm):
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor):
-        super().__init__(path, imageName, resultFolderDir, cluster_override, decimate_factor)
+    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum='elbow'):
+        super().__init__(path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum=cluster_enum)
         self.ALG = 'GMM'
 
     def cluster(self, img):

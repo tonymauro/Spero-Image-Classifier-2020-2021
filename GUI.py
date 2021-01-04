@@ -325,22 +325,38 @@ class MainWindow(QMainWindow):
         currentDir = self.make_result_dir(filename, currentDir)
 
         try:
+
+            cluster_enum = ""
+            # setting the cluster enumeration method in the GUI
+            # DOES NOT WORK FOR THE CUSTOM KMEANS YET
+            if self.EnumDropDownList.currentText() == 'Gap Statistic':
+                cluster_enum = 'gap'
+            elif self.EnumDropDownList.currentText() == 'Depth Difference':
+                cluster_enum = 'ded'
+            else:
+                cluster_enum = self.EnumDropDownList.currentText().lower()
+
+            # setting the clustering algorithm in the GUI
             if self.DropDownList.currentText() == "Custom K-Means Clustering Algorithm":
                 runner.run_CustomKMeansAlgorithm(self.filePath, filename, currentDir, custom_clusters=clusterOverride,
                                                  decimation=decimateOverride, max_iterations=30)
             elif self.DropDownList.currentText() == "Hierarchical Clustering Algorithm: Scikit-Learn":
-                runner.run_HierarchicalClusterAlgorithm(self.filePath, filename, currentDir,
+                runner.run_HierarchicalClusterAlgorithm(self.filePath, filename, currentDir, cluster_enum,
                                                         cluster_override=clusterOverride, n_neighbors_override=nOverride,
                                                         decimate_factor=decimateOverride)
             elif self.DropDownList.currentText() == "K-Means Clustering: Scikit-Learn":
-                runner.run_kMeansAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
-                                           decimate_factor=decimateOverride)
+                runner.run_kMeansAlgorithm(self.filePath, filename, currentDir, cluster_enum, 
+                                            cluster_override=clusterOverride,
+                                            decimate_factor=decimateOverride)
             elif self.DropDownList.currentText() == "Gaussian Mixture Model: Scikit-Learn":
-                runner.run_GMMAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
-                                           decimate_factor=decimateOverride)
+                runner.run_GMMAlgorithm(self.filePath, filename, currentDir, cluster_enum, 
+                                            cluster_override=clusterOverride,
+                                            decimate_factor=decimateOverride)
             elif self.DropDownList.currentText() == "Experimental":
-                runner.run_EXPAlgorithm(self.filePath, filename, currentDir, cluster_override=clusterOverride,
-                                           decimate_factor=decimateOverride)
+                runner.run_EXPAlgorithm(self.filePath, filename, currentDir, cluster_enum,
+                                            cluster_override=clusterOverride,
+                                            decimate_factor=decimateOverride)
+
             self.newWindow.close()
             self.show()
             self.resultWindow = Result(currentDir, filename, self.filePath)
