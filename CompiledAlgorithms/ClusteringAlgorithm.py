@@ -48,7 +48,7 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = 1
+        self.NORMALIZE = 0
 
         # cluster enum
         self.CLUSTER_ENUM = cluster_enum
