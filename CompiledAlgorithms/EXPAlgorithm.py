@@ -16,10 +16,6 @@ from .ClusteringAlgorithm import ClusteringAlgorithm
 
 class DominantColorsEXP(ClusteringAlgorithm):
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor):
-        super().__init__(path, imageName, resultFolderDir, cluster_override, decimate_factor)
-        self.ALG = 'EXP'
-
     def cluster(self, img):
         # Runs the Scikitlearn algorithm with the determined number of clusters
         clustering = OPTICS(min_samples=2).fit(img)

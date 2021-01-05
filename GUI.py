@@ -87,7 +87,15 @@ class MainWindow(QMainWindow):
         self.EnumDropDownList.addItem("Gap Statistic")
         self.EnumDropDownList.addItem("Depth Difference")
         self.EnumDropDownList.addItem("Silhouette")
-        #self.EnumDropDownList.currentIndexChanged.connect(self.checkDropDown)
+        self.EnumDropDownList.currentIndexChanged.connect(self.checkDropDown)
+
+        # Dropdown list for list of normalization methods.
+        self.NormDropDownList = QComboBox()
+        self.NormDropDownList.addItem("Choose Normalization Method")
+        self.NormDropDownList.addItem("Off")
+        self.NormDropDownList.addItem("Mean")
+        self.NormDropDownList.addItem("Linear")
+        self.NormDropDownList.currentIndexChanged.connect(self.checkDropDown)
 
         # Adds folowing widgets to hLayout for file selection section
         hLayout.addWidget(self.currentDirText)
@@ -100,6 +108,7 @@ class MainWindow(QMainWindow):
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.DropDownList)
         vLayout.addWidget(self.EnumDropDownList)
+        vLayout.addWidget(self.NormDropDownList)
         vLayout.addLayout(hButtonLayout)
         # Calls the startAlgorithm function when start button is clicked, enabled false
         # By default until user has selected an algorithm and an ENVI File
@@ -229,16 +238,20 @@ class MainWindow(QMainWindow):
             self.dirButton.setEnabled(False)
 
     def checkDropDown(self):
-        # Toggles override options for different clustering algorithms
-        # Makes sure run button is not enabled when no algorithm and file is selected
-        text = self.DropDownList.currentText()
+        """
+        Toggles override options for different clustering algorithms.
+        Makes sure run button is not enabled when no items are selected from dropdown menus
+        """
+        alg_text = self.DropDownList.currentText()
+        enum_text = self.EnumDropDownList.currentText()
+        norm_text = self.NormDropDownList.currentText()
         print(self.currentDirText.text())
-        if text != "Choose Clustering Algorithm" and self.filePath:
+        if alg_text != "Choose Clustering Algorithm" and enum_text != "Choose Cluster Enumeration Method" and norm_text != "Choose Normalization Method" and self.filePath:
             self.startButton.setEnabled(True)
         else:
             self.startButton.setEnabled(False)
 
-        if text == "Hierarchical Clustering Algorithm: Scikit-Learn":
+        if alg_text == "Hierarchical Clustering Algorithm: Scikit-Learn":
             self.neighborCheck.setEnabled(True)
             self.stateChangeNeighbor()
             return
@@ -326,9 +339,12 @@ class MainWindow(QMainWindow):
 
         try:
 
-            cluster_enum = ""
+            # setting the data normalization method in the GUI
+            norm = self.NormDropDownList.currentText().lower()
+
             # setting the cluster enumeration method in the GUI
-            # DOES NOT WORK FOR THE CUSTOM KMEANS YET
+            # DOES NOT WORK FOR THE CUSTOM KMEANS
+            cluster_enum = ""
             if self.EnumDropDownList.currentText() == 'Gap Statistic':
                 cluster_enum = 'gap'
             elif self.EnumDropDownList.currentText() == 'Depth Difference':
@@ -336,26 +352,36 @@ class MainWindow(QMainWindow):
             else:
                 cluster_enum = self.EnumDropDownList.currentText().lower()
 
+            kwargs = {
+                "alg": None,
+                "path": self.filePath,
+                "imageName": filename,
+                "resultFolderDir": currentDir,
+                "cluster_override": clusterOverride,
+                "decimate_factor":decimateOverride, 
+                "cluster_enum": cluster_enum,
+                "norm": norm,
+            }
+
             # setting the clustering algorithm in the GUI
             if self.DropDownList.currentText() == "Custom K-Means Clustering Algorithm":
                 runner.run_CustomKMeansAlgorithm(self.filePath, filename, currentDir, custom_clusters=clusterOverride,
                                                  decimation=decimateOverride, max_iterations=30)
             elif self.DropDownList.currentText() == "Hierarchical Clustering Algorithm: Scikit-Learn":
-                runner.run_HierarchicalClusterAlgorithm(self.filePath, filename, currentDir, cluster_enum,
+                runner.run_HierarchicalClusterAlgorithm(self.filePath, filename, currentDir, cluster_enum, norm,
                                                         cluster_override=clusterOverride, n_neighbors_override=nOverride,
                                                         decimate_factor=decimateOverride)
-            elif self.DropDownList.currentText() == "K-Means Clustering: Scikit-Learn":
-                runner.run_kMeansAlgorithm(self.filePath, filename, currentDir, cluster_enum, 
-                                            cluster_override=clusterOverride,
-                                            decimate_factor=decimateOverride)
-            elif self.DropDownList.currentText() == "Gaussian Mixture Model: Scikit-Learn":
-                runner.run_GMMAlgorithm(self.filePath, filename, currentDir, cluster_enum, 
-                                            cluster_override=clusterOverride,
-                                            decimate_factor=decimateOverride)
-            elif self.DropDownList.currentText() == "Experimental":
-                runner.run_EXPAlgorithm(self.filePath, filename, currentDir, cluster_enum,
-                                            cluster_override=clusterOverride,
-                                            decimate_factor=decimateOverride)
+            else:
+                # these are the sklearn clustering algorithms
+                if self.DropDownList.currentText() == "K-Means Clustering: Scikit-Learn":
+                    kwargs['alg'] = 'kmeans'
+                elif self.DropDownList.currentText() == "Gaussian Mixture Model: Scikit-Learn":
+                    kwargs['alg'] = 'gmm'
+                elif self.DropDownList.currentText() == "Experimental":
+                    kwargs['alg'] = 'exp'
+
+                # running the selected algorithm
+                runner.runSklearnAlg(**kwargs)
 
             self.newWindow.close()
             self.show()

@@ -21,7 +21,7 @@ import datetime
 
 class ClusteringAlgorithm:
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum='elbow'):
+    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum='elbow', norm='off', alg=None):
         print(datetime.datetime.now())
         # PATH is the path of the ENVI File, RESULT_PATH is where the results will be saved
         # Cluster overrides and decimation factor are optional override options for user
@@ -48,19 +48,19 @@ class ClusteringAlgorithm:
         self.PCADIMENSIONS = 0
 
         #normalize
-        self.NORMALIZE = 1
+        self.NORMALIZE = norm
 
         # cluster enum
         self.CLUSTER_ENUM = cluster_enum
 
-        self.ALG = None
+        self.ALG = alg
 
     def find_centers(self):
         """
         finds average of spectra of all pixels in a cluster
         """
         points = self.origImage
-        if self.NORMALIZE != 0:
+        if self.NORMALIZE != 'off':
             points = self.normalizedImage
         c = 0
         self.CLUSTERS = np.max(self.LABELS) + 1
@@ -79,13 +79,13 @@ class ClusteringAlgorithm:
     def normalize(self):
         img = np.array(self.origImage)
 
-        if self.NORMALIZE == 1:
+        if self.NORMALIZE == 'mean':
             print("Normalizing Pixels with StandardScaler")
             scaler = StandardScaler()
             for i in tqdm(range(img.shape[0])):
                 for j in range(img.shape[1]):
                     img[i, j] = np.transpose(scaler.fit_transform(np.transpose([img[i, j]])))[0]
-        elif self.NORMALIZE == 2:
+        elif self.NORMALIZE == 'linear':
             print("Normalizing Pixels with Linear regression")
             x = np.transpose([self.WAVELENGTHS])
             scaler = StandardScaler()

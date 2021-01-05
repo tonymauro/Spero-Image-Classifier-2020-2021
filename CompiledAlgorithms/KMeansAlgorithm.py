@@ -12,9 +12,6 @@ from .elbowMethod import Elbow
 
 
 class DominantColorsKMeans(ClusteringAlgorithm):
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor):
-        super().__init__(path, imageName, resultFolderDir, cluster_override, decimate_factor)
-        self.ALG = 'K-Means'
 
     def find_centers(self):
         """

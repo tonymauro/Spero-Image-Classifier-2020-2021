@@ -14,10 +14,6 @@ from .ClusteringAlgorithm import ClusteringAlgorithm
 
 class DominantColorsGMM(ClusteringAlgorithm):
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum='elbow'):
-        super().__init__(path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum=cluster_enum)
-        self.ALG = 'GMM'
-
     def cluster(self, img):
         # Runs the Scikitlearn algorithm with the determined number of clusters
         gmm = GaussianMixture(n_components=self.CLUSTERS, n_init=3, covariance_type='full', verbose=1)
