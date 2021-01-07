@@ -248,7 +248,7 @@ class ClusteringAlgorithm:
         with open(path1, mode='w+', newline='') as csvFile:
             writer = csv.writer(csvFile)
             i = 0
-            for row in self.IMAGE:
+            for row in list(self.IMAGE):
                 row.append(self.LABELS[i])
                 i+=1
                 writer.writerow(row)
