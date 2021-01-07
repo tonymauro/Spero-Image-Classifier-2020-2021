@@ -22,14 +22,16 @@ class AlgorithmRunner:
             "decimate_factor":decimate_factor, 
             "cluster_enum": cluster_enum,
             "norm": norm,
-            "alg": 'K-Means'
         }
         # using the selected algorithm
         if alg == 'kmeans':
+            kwargs['alg'] = 'KMeans'
             algorithm = DominantColorsKMeans(**kwargs)
         elif alg == 'gmm':
+            kwargs['alg'] = 'GMM'
             algorithm = DominantColorsGMM(**kwargs)
         elif alg == 'exp':
+            kwargs['alg'] = 'EXP'
             algorithm = DominantColorsEXP(**kwargs)
         
         return algorithm.findDominant()

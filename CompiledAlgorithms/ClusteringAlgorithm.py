@@ -66,6 +66,7 @@ class ClusteringAlgorithm:
         self.CLUSTERS = np.max(self.LABELS) + 1
         centers = np.zeros((self.CLUSTERS, points.shape[2]))
         counts = np.zeros(self.CLUSTERS)
+        # averaging the absorbance values of the pixels in each cluster
         for x in range(points.shape[0]):
             for y in range(points.shape[1]):
                 centers[self.LABELS[c]] += points[x, y]
@@ -239,15 +240,12 @@ class ClusteringAlgorithm:
                     tempDict["Cluster " + str(x + 1)] = self.CENTROIDS[x][self.WAVELENGTHS.index(wl)]
                 writer.writerow(tempDict)
 
-        df = pandas.read_csv(path)
+        #df = pandas.read_csv(path)
         # print(df)
-        # makes CSV file of the clustered data in the given directory in case
-        # user wants to further analyze the chemical composition
+        # makes CSV file of the PCA-transformed image data in the given directory
         path1 = self.RESULT_PATH + self.imageName + '_pca' + '.csv'
 
         with open(path1, mode='w+', newline='') as csvFile:
             writer = csv.writer(csvFile)
             for row in self.IMAGE:
                 writer.writerow(row)
-
-        df = pandas.read_csv(path1)
