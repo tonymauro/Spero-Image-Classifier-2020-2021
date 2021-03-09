@@ -205,7 +205,8 @@ class EnviImage :
         return Output
     
     def Read(self, FileName, bReadImageData=True, bEchoKeys=False, bTransmittance=True):
-        HeaderFileName = FileName + ".hdr" # FileName is the name of the pixel file
+        #HeaderFileName = FileName + ".hdr" # FileName is the name of the pixel file
+        HeaderFileName = os.path.splitext(FileName)[0]+'.hdr'
         with open(HeaderFileName, "r") as f :
             # First line must be ENVI
             l = f.readline().strip()
