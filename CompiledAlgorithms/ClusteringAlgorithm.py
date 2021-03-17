@@ -190,6 +190,12 @@ class ClusteringAlgorithm:
                         [0.56,0.14,0.14],[0.14,0.38,0.56],[0.56,0.42,0.14],[0.42,0.14,0.56],[0.31,0.56,0.14],[0,0,0],[0.45,0.45,0.45],[0.8,0.8,0.8]]"""
  
         # Plots the wavenumber vs absorption graph for each centroid color coded
+        for center in range(k):
+            plt.close()
+            plt.figure()
+            plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",label="Center " + str(center + 1))
+            plt.savefig("/content/Results/single/" + self.imageName + "_SeperateClusteredAbsorptionGraph0" + str(center+1) + ".png")
+            plt.close()
         plt.figure()
         plt.ylabel('Absorption')
         plt.xlabel('Wave Number')
@@ -199,7 +205,7 @@ class ClusteringAlgorithm:
                      label="Center " + str(center + 1))
         plt.legend()
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredAbsorptionGraph.png")
-
+        plt.legend()
         newImg = np.zeros((points.shape[0], points.shape[1], 3))
         # Remakes the image based on the labels at each pixel
         # The label's color is determined by the index of list colorChoices
@@ -208,6 +214,7 @@ class ClusteringAlgorithm:
             for y in range(newImg.shape[1]):
                 newImg[x, y] = colorChoices[labels[c]]
                 c += 1
+
         # Plots the 3D graph using R G B list collected from above and use colors from the clusters list
         # Saves the image as a png file in the result folder given from user input(If no user input, the
         # files would be saved at default "RESULT/*FILENAME*"
@@ -218,7 +225,6 @@ class ClusteringAlgorithm:
         fig.add_axes(ax)
         plt.imshow(newImg)
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredImage.png", bbox_inches="tight", pad_inches=0)
-
         self.makeCSV()
         print(datetime.datetime.now())
 
