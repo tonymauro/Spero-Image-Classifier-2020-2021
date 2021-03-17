@@ -21,7 +21,7 @@ import datetime
 
 class ClusteringAlgorithm:
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, cluster_enum='elbow', norm='off', alg=None):
+    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, PCAON, cluster_enum='elbow', norm='off', alg=None):
         print(datetime.datetime.now())
         # PATH is the path of the ENVI File, RESULT_PATH is where the results will be saved
         # Cluster overrides and decimation factor are optional override options for user
@@ -44,7 +44,7 @@ class ClusteringAlgorithm:
         self.decimate_factor = decimate_factor
 
         # PCA configs
-        self.PCAON = True
+        self.PCAON = PCAON
         self.PCADIMENSIONS = 0
 
         #normalize

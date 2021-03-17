@@ -9,7 +9,7 @@ from CompiledAlgorithms.elbowMethod import Elbow
 class AlgorithmRunner:
     # Runs selected algorithm with optional override
 
-    def runSklearnAlg(self, alg, path, imageName, resultFolderDir, cluster_enum, norm, cluster_override=0, decimate_factor=1):
+    def runSklearnAlg(self, alg, path, imageName, resultFolderDir, cluster_enum, norm, PCAON, cluster_override=0, decimate_factor=1):
         """
         Method to run the sklearn clustering algorithm specified in the GUI
         """
@@ -22,6 +22,7 @@ class AlgorithmRunner:
             "decimate_factor":decimate_factor, 
             "cluster_enum": cluster_enum,
             "norm": norm,
+            "PCAON":PCAON,
         }
         # using the selected algorithm
         if alg == 'kmeans':
@@ -33,7 +34,7 @@ class AlgorithmRunner:
         elif alg == 'exp':
             kwargs['alg'] = 'EXP'
             algorithm = DominantColorsEXP(**kwargs)
-        
+
         return algorithm.findDominant()
 
     # Hierarchical has n-neighbors, but not KMeans
