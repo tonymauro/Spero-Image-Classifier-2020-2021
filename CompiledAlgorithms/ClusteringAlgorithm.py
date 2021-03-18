@@ -193,6 +193,8 @@ class ClusteringAlgorithm:
         for center in range(k):
             plt.close()
             plt.figure()
+            plt.ylabel('Absorption')
+            plt.xlabel('Wave Number')
             plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",label="Center " + str(center + 1))
             plt.savefig("/content/Results/single/" + self.imageName + "_SeperateClusteredAbsorptionGraph0" + str(center+1) + ".png")
             plt.close()
