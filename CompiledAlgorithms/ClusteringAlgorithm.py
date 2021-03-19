@@ -196,7 +196,7 @@ class ClusteringAlgorithm:
             plt.ylabel('Absorption')
             plt.xlabel('Wave Number')
             plt.plot(self.WAVELENGTHS, self.CENTROIDS[center], color=colorChoices[center], marker="o",label="Center " + str(center + 1))
-            plt.savefig(self.RESULT_PATH + "Centers/" + self.imageName + "_AbsorptionGraphCenter" + str(center+1).zfill(2) + ".png")
+            plt.savefig(self.RESULT_PATH + "Centers/" +  "AbsorptionGraphCenter" + str(center+1).zfill(2) + ".png")
             plt.close()
         plt.figure()
         plt.ylabel('Absorption')
