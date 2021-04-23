@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         # Sets up GUI window with default variables and window icon
         QMainWindow.__init__(self)
         self.setWindowTitle("Spero Classifier")
-        self.setFixedSize(700, 200)
+        self.setFixedSize(700, 250)
         self.setWindowIcon(QIcon('CompiledAlgorithms/DRS_Logo.jfif'))
         self.filePath = ""
         self.currentDir = "Not selected"
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
     def makeUploadBox(self):
         # Box for GUI objects related to files
         self.uploadBox = QGroupBox("ENVI File")
-        self.uploadBox.setFixedSize(350, 200)
+        self.uploadBox.setFixedSize(350, 250)
         self.uploadBox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
         #  will be the main layout for the box with hLayout inside the layout
@@ -97,6 +97,11 @@ class MainWindow(QMainWindow):
         self.NormDropDownList.addItem("Linear")
         self.NormDropDownList.currentIndexChanged.connect(self.checkDropDown)
 
+        # Checkbox for selecting PCA
+        ## Replace with dropdown list in the future if multiple dimensionality reduction algorithms
+        self.DimenRedList = QCheckBox("PCAON")
+        self.DimenRedList.setEnabled(True)
+
         # Adds folowing widgets to hLayout for file selection section
         hLayout.addWidget(self.currentDirText)
         hLayout.addWidget(self.OK_Button)
@@ -109,6 +114,7 @@ class MainWindow(QMainWindow):
         vLayout.addWidget(self.DropDownList)
         vLayout.addWidget(self.EnumDropDownList)
         vLayout.addWidget(self.NormDropDownList)
+        vLayout.addWidget(self.DimenRedList)
         vLayout.addLayout(hButtonLayout)
         # Calls the startAlgorithm function when start button is clicked, enabled false
         # By default until user has selected an algorithm and an ENVI File
@@ -121,7 +127,7 @@ class MainWindow(QMainWindow):
         # Box for manual overrides for certain algorithms
         # Using QFormLayout to make rows for each override along with their check marks
         self.manualBox = QGroupBox("Optional Manual Adjustments")
-        self.manualBox.setFixedSize(350, 200)
+        self.manualBox.setFixedSize(350, 250)
         self.manualBox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         manualLayout = QFormLayout()
         # All following override GUI except saveDir are disabled until
@@ -325,6 +331,8 @@ class MainWindow(QMainWindow):
             except:
                 pass
 
+        PCAON = self.DimenRedList.isChecked()
+
         # Checks if user specified on a specific directory to save the result folder
         if self.currentDir == "Not selected":
             currentDir = str(__file__)[:-7] + "/Result/"
@@ -361,6 +369,7 @@ class MainWindow(QMainWindow):
                 "decimate_factor":decimateOverride, 
                 "cluster_enum": cluster_enum,
                 "norm": norm,
+                "PCAON": PCAON,
             }
 
             # setting the clustering algorithm in the GUI
