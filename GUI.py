@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
                     return
                 else:
                     temp_path += name_index
-                    return temp_path + "\\"
+                    return temp_path + "/"
         else:
             try:
                 os.makedirs(temp_path)
@@ -293,7 +293,7 @@ class MainWindow(QMainWindow):
                 print(e)
                 return
             else:
-                return temp_path + "\\"
+                return temp_path + "/"
                 pass
 
     def startAlgorithm(self):
@@ -337,13 +337,14 @@ class MainWindow(QMainWindow):
         if self.currentDir == "Not selected":
             currentDir = str(__file__)[:-7] + "/Result/"
         else:
-            currentDir = self.currentDir + "\\"
+            currentDir = self.currentDir + "/"
 
         # Get the name of the ENVI image
         filename = self.filePath[self.filePath.rfind("/") + 1:len(self.filePath)]
 
         # Make the result folder at the given directory
         currentDir = self.make_result_dir(filename, currentDir)
+        os.mkdir(currentDir+"Centers/")
 
         try:
 
