@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import pandas
 import csv
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.decomposition import PCA
 import numpy as np
 from tqdm import tqdm
@@ -21,11 +22,12 @@ import datetime
 
 class ClusteringAlgorithm:
 
-    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, PCAON, cluster_enum='elbow', norm='off', alg=None):
+    def __init__(self, path, imageName, resultFolderDir, cluster_override, decimate_factor, PCAON, cluster_enum='elbow', norm='off', alg=None, performance_metric=None):
         print(datetime.datetime.now())
         # PATH is the path of the ENVI File, RESULT_PATH is where the results will be saved
         # Cluster overrides and decimation factor are optional override options for user
         # Default resultFolderDir = ...CompiledAlgorithms/Result/imageName+timestamp
+		# Set performance_metric="silhouette" if you want to generate a silhouette plot. Not very useful so not included as a main feature.
         self.IMAGE = None
         self.imageName = imageName
         self.origImage = path
@@ -54,6 +56,8 @@ class ClusteringAlgorithm:
         self.CLUSTER_ENUM = cluster_enum
 
         self.ALG = alg
+
+        self.PERFORMANCE_METRIC = performance_metric
 
     def find_centers(self):
         """
@@ -229,6 +233,50 @@ class ClusteringAlgorithm:
         plt.savefig(self.RESULT_PATH + self.imageName + "_ClusteredImage.png", bbox_inches="tight", pad_inches=0)
         self.makeCSV()
         print(datetime.datetime.now())
+
+        fig, ax = plt.subplots()
+        fig.set_size_inches(9, 7)
+        X = self.IMAGE
+        if self.PERFORMANCE_METRIC == "silhouette":
+            silhouette_avg = silhouette_score(X, labels)
+            print("The average silhouette score for this clustering is ", silhouette_avg)
+            print(datetime.datetime.now())
+            sample_silhouette_values = silhouette_samples(X, labels)
+            y_lower = 10
+            for i in range(k):
+                # Aggregate the silhouette scores for samples belonging to
+                # cluster i, and sort them
+                ith_cluster_silhouette_values = \
+                    sample_silhouette_values[labels == i]
+
+                ith_cluster_silhouette_values.sort()
+
+                size_cluster_i = ith_cluster_silhouette_values.shape[0]
+                y_upper = y_lower + size_cluster_i
+
+                color = cm.nipy_spectral(float(i) / k)
+                ax.fill_betweenx(np.arange(y_lower, y_upper),
+                                  0, ith_cluster_silhouette_values,
+                                  facecolor=color, edgecolor=color, alpha=0.7)
+
+                # Label the silhouette plots with their cluster numbers at the middle
+                ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+
+                # Compute the new y_lower for next plot
+                y_lower = y_upper + 10  # 10 for the 0 samples
+
+            ax.set_title("The silhouette plot for the various clusters.")
+            ax.set_xlabel("The silhouette coefficient values")
+            ax.set_ylabel("Cluster label")
+
+            # The vertical line for average silhouette score of all the values
+            ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+            ax.set_yticks([])  # Clear the yaxis labels / ticks
+            ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+            plt.savefig(self.RESULT_PATH + self.imageName + "_SilhouettePlot.png", bbox_inches="tight", pad_inches=0)
+            print(datetime.datetime.now())
 
     def makeCSV(self):
         # makes CSV file of the clustered data in the given directory in case
