@@ -48,7 +48,8 @@ class Silhouette:
         for n_clusters in tqdm(self.cluster_range):
             clusterer = KMeans(n_clusters=n_clusters)
             cluster_labels = clusterer.fit_predict(X)
-            print(n_clusters)
+            print("\nClusters:", n_clusters)
             silhouette_avg = silhouette_score(X, cluster_labels)
+            print("Silhouette average:", silhouette_avg)
             self.avg_sil.append(silhouette_avg)
         return self.cluster_range[self.avg_sil.index(max(self.avg_sil))]
